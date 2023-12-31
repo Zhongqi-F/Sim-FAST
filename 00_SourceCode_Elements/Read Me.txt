@@ -1,0 +1,5 @@
+The elements in this folder are solved using central difference
+method. While central difference may not be the most stable solution, 
+it has unified formulation across a wide variety of elements. This 
+is particularly helpful for an educational package. There are other
+more advanced elements in the "Advanced Elements" folder. 
