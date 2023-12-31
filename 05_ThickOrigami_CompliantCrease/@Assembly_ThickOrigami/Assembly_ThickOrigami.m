@@ -1,5 +1,5 @@
 
-classdef Assembly < handle
+classdef Assembly_ThickOrigami < handle
 
     properties
         % Nodes

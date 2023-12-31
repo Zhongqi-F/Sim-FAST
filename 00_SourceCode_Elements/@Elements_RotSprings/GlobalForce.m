@@ -1,72 +1,53 @@
-%% Assemble inner force vector for springs
-% The output Tspr is the global inner force vector for rotational springs.
+%% Assemble inner force of rotatinal springs
+% This code calculate the global force vector of the rotational springs
+% using the central difference method. 
 
+function [Trs]=GlobalForce(obj,node,U)
 
-function [Tspr]=Spr_GlobalForce(obj,node,U,M)
-    
-    A=size(U);
-    NodeNum=A(1);    
-    Tspr=zeros(3*NodeNum,1);
-
+    % retrieve information about the element
     nodalCoordinates=node.coordinates_Mat;
-    sprIJKL=obj.sprIJKL_Mat;
+    rotSprIJKL=obj.rotSprIJKL_Mat;
+    theta0=obj.theta_StressFree_Vec;
+    rotSprK=obj.rotSprK_Vec;
+
+    % find the number of elements
+    rotSprNum=size(rotSprK);
+    rotSprNum=rotSprNum(1);
+
+    % find the number of nodal coordinates
+    A=size(nodalCoordinates);
+    nodeNum=A(1);
+    Trs=zeros(3*nodeNum,1);  
     
-       
-    %% The vectorized version of the code
-    
-    spr_i=sprIJKL(:,1);
-    spr_j=sprIJKL(:,2);
-    spr_k=sprIJKL(:,3);
-    spr_l=sprIJKL(:,4);
+    % solve for the internal forces using central difference
+    for i=1:rotSprNum
+        
+        node1=rotSprIJKL(i,1);
+        node2=rotSprIJKL(i,2);
+        node3=rotSprIJKL(i,3);
+        node4=rotSprIJKL(i,4);
+        
+        % The nodal cooridnates of the node after adding the deformation
+        X1=nodalCoordinates(node1,:)+U(node1,:);
+        X2=nodalCoordinates(node2,:)+U(node2,:);
+        X3=nodalCoordinates(node3,:)+U(node3,:);
+        X4=nodalCoordinates(node4,:)+U(node4,:);
 
-    spr_i=nonzeros(spr_i);
-    spr_j=nonzeros(spr_j);
-    spr_k=nonzeros(spr_k);
-    spr_l=nonzeros(spr_l);
+        X=[X1;X2;X3;X4;];
 
-    nodei=nodalCoordinates(spr_i,:)+U(spr_i,:);
-    nodej=nodalCoordinates(spr_j,:)+U(spr_j,:);
-    nodek=nodalCoordinates(spr_k,:)+U(spr_k,:);
-    nodel=nodalCoordinates(spr_l,:)+U(spr_l,:);
+        % Find the local force vector
+        Flocal=obj.LocalForce(X,theta0(i),rotSprK(i));
 
-    rij=(nodei-nodej);
-    rkj=(nodek-nodej);
-    rkl=(nodek-nodel);
+        % These lines put the local force vector at the right location
+        % in the global force vector.
+        Trs((3*node1-2):(3*node1),:)=...
+            Trs((3*node1-2):(3*node1),:)+Flocal(1:3);
+        Trs((3*node2-2):(3*node2),:)=...
+            Trs((3*node2-2):(3*node2),:)+Flocal(4:6);
+        Trs((3*node3-2):(3*node3),:)=...
+            Trs((3*node3-2):(3*node3),:)+Flocal(7:9);
+        Trs((3*node4-2):(3*node4),:)=...
+            Trs((3*node4-2):(3*node4),:)+Flocal(10:12);
 
-    m=cross(rij,rkj,2);
-    n=cross(rkj,rkl,2);  
-
-    m_square=dot(m',m')';
-    n_square=dot(n',n')';
-
-    rkj_square=dot(rkj',rkj')';
-    rkj_norm=sqrt(rkj_square);
-
-    parti=(rkj_norm./m_square).*m;
-    partl=-rkj_norm./n_square.*n;
-    partj=((dot(rij',rkj')'./rkj_norm./rkj_norm-1)).*parti-dot(rkl',rkj')'./rkj_norm./rkj_norm.*partl;
-    partk=((dot(rkl',rkj')'./rkj_norm./rkj_norm-1)).*partl-dot(rij',rkj')'./rkj_norm./rkj_norm.*parti;
-
-    gradient=[parti,partj,partk,partl];
-    
-    M_temp=M;    
-    localT=M_temp.*gradient;        
-    
-    index1=3*spr_i-2;
-    index2=3*spr_j-2;
-    index3=3*spr_k-2;
-    index4=3*spr_l-2;
-
-    index=[index1, index1+1, index1+2,...
-             index2, index2+1, index2+2,...
-             index3, index3+1, index3+2,...
-             index4, index4+1, index4+2];
-         
-    
-    index=index(:);
-    localT=localT(:);
-    
-    for i=1:length(index)
-        Tspr(index(i))=Tspr(index(i))+localT(i);        
-    end
+    end    
 end

@@ -61,22 +61,22 @@ function AddCompliantCrease(obj,LeftNode,RightNode,LeftAnchor,RightAnchor,t,W,E,
 
     sprStiff=3*E*L*(t^3)/W/12;
 
-    obj.spr.sprIJKL_Mat=[obj.spr.sprIJKL_Mat;LeftAnchor,LeftNode(1),LeftNode(2),newN3];
-    obj.spr.sprIJKL_Mat=[obj.spr.sprIJKL_Mat;LeftNode(2),LeftNode(1),newN3,newN1];
-    obj.spr.sprIJKL_Mat=[obj.spr.sprIJKL_Mat;LeftNode(1),LeftNode(2),newN3,newN2];
+    obj.spr.rotSprIJKL_Mat=[obj.spr.rotSprIJKL_Mat;LeftAnchor,LeftNode(1),LeftNode(2),newN3];
+    obj.spr.rotSprIJKL_Mat=[obj.spr.rotSprIJKL_Mat;LeftNode(2),LeftNode(1),newN3,newN1];
+    obj.spr.rotSprIJKL_Mat=[obj.spr.rotSprIJKL_Mat;LeftNode(1),LeftNode(2),newN3,newN2];
 
-    obj.spr.sprRotK_Vec=[obj.spr.sprRotK_Vec;sprStiff*ones(3,1)];
+    obj.spr.rotSprK_Vec=[obj.spr.rotSprK_Vec;sprStiff*ones(3,1)];
 
-    obj.spr.sprIJKL_Mat=[obj.spr.sprIJKL_Mat;LeftNode(1),newN3,newN1,RightNode(1)];
-    obj.spr.sprIJKL_Mat=[obj.spr.sprIJKL_Mat;LeftNode(2),newN3,newN2,RightNode(2)];
+    obj.spr.rotSprIJKL_Mat=[obj.spr.rotSprIJKL_Mat;LeftNode(1),newN3,newN1,RightNode(1)];
+    obj.spr.rotSprIJKL_Mat=[obj.spr.rotSprIJKL_Mat;LeftNode(2),newN3,newN2,RightNode(2)];
 
-    obj.spr.sprRotK_Vec=[obj.spr.sprRotK_Vec;4*sprStiff*ones(2,1)];
+    obj.spr.rotSprK_Vec=[obj.spr.rotSprK_Vec;4*sprStiff*ones(2,1)];
 
-    obj.spr.sprIJKL_Mat=[obj.spr.sprIJKL_Mat;RightNode(2),RightNode(1),newN3,newN1];
-    obj.spr.sprIJKL_Mat=[obj.spr.sprIJKL_Mat;RightNode(1),RightNode(2),newN3,newN2];
-    obj.spr.sprIJKL_Mat=[obj.spr.sprIJKL_Mat;RightAnchor,RightNode(1),RightNode(2),newN3];
+    obj.spr.rotSprIJKL_Mat=[obj.spr.rotSprIJKL_Mat;RightNode(2),RightNode(1),newN3,newN1];
+    obj.spr.rotSprIJKL_Mat=[obj.spr.rotSprIJKL_Mat;RightNode(1),RightNode(2),newN3,newN2];
+    obj.spr.rotSprIJKL_Mat=[obj.spr.rotSprIJKL_Mat;RightAnchor,RightNode(1),RightNode(2),newN3];
 
-    obj.spr.sprRotK_Vec=[obj.spr.sprRotK_Vec;sprStiff*ones(3,1)];
+    obj.spr.rotSprK_Vec=[obj.spr.rotSprK_Vec;sprStiff*ones(3,1)];
     
     obj.spr.theta_StressFree_Vec=[obj.spr.theta_StressFree_Vec;pi*ones(8,1)];
 

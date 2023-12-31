@@ -74,7 +74,7 @@ end
 % Number Dots
 node0=assembly.node.coordinates_Mat;
 
-sprIJKL=obj.assembly.spr.sprIJKL_Mat;
+sprIJKL=obj.assembly.spr.rotSprIJKL_Mat;
 sprNum=size(sprIJKL);
 sprNum=sprNum(1);
 

@@ -17,7 +17,8 @@ function [Uhis]=Solve(obj)
     % Find the external forces that is currently applied on the structure
     currentAppliedForce=zeros(3*NodeNum,1);    
     for i=1:NodeNum
-        currentAppliedForce(3*(i-1)+1:3*i) = assembly.node.currentExtForce_Mat(i,:);
+        currentAppliedForce(3*(i-1)+1:3*i) = ...
+            assembly.node.currentExtForce_Mat(i,:);
     end  
 
 
@@ -27,7 +28,7 @@ function [Uhis]=Solve(obj)
     count=1;
 
     % find the zero strain angle, before and after the analysis
-    sprZeroStrain_before=assembly.spr.currentTheta_Vec;
+    sprZeroStrain_before=assembly.spr.theta_Current_Vec;
     sprZeroStrain_after=obj.targetRot;
     
         
@@ -44,6 +45,7 @@ function [Uhis]=Solve(obj)
             
             assembly.spr.theta_StressFree_Vec=...
                 sprZeroStrain_current;
+
             [T,K]=assembly.SolveFK(U);
 
             % calculate the unbalanced force
