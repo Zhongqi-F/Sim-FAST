@@ -1,5 +1,5 @@
 
-classdef Assembly_ThickOrigami < handle
+classdef Assembly_BennettLinkage < handle
 
     properties
         % Nodes
@@ -11,18 +11,12 @@ classdef Assembly_ThickOrigami < handle
         % Rotational Springs
         rotSpr
 
-        % Wedges
-        wedge
-
     end
 
     methods
         % For a given input deformation find the global force vector and
         % the stiffness matrix
         [T,K]=SolveFK(obj,node,U)
-
-        % Add a compliant crease to the specified location
-        AddCompliantCrease(obj,LeftNode,RightNode,LeftAnchor,RightAnchor,t,W,E,G)
 
         % Initialize the assembly
         % This will set currentU to be zero matrix

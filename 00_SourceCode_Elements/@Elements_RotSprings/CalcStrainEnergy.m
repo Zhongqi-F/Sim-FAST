@@ -1,6 +1,8 @@
-%% Solve the global force and stiffness of springs
-% This function calcualtes the global force and stiffness of the springs
-
+%% Solve the strain energy and current fold angle of rotational springs
+% This function calcualtes the strain energy and current folding angle 
+% of the rotational springs. This function is used after solving the 
+% loading or folding process. We use this function to compute responses
+% (strain energy) that are of interest to us. 
 
 function CalcStrainEnergy(obj,node,U)
     

@@ -24,6 +24,41 @@ else
     axis([Vsize(1) Vsize(2) Vsize(3) Vsize(4) Vsize(5) Vsize(6)])
 end
 
+wedgeConnect=assembly.wedge.wedgeConnect_Mat;
+wedgeNum=size(wedgeConnect);
+wedgeNum=wedgeNum(1);
+node=assembly.node.coordinates_Mat;
+
+for j=1:wedgeNum
+    node1=node(wedgeConnect(j,1),:);
+    node2=node(wedgeConnect(j,2),:);
+    node3=node(wedgeConnect(j,3),:);
+    node4=node(wedgeConnect(j,4),:);
+    node5=node(wedgeConnect(j,5),:);
+    node6=node(wedgeConnect(j,6),:);
+
+    f=[1,2,3];
+    v=[node1;node2;node3;];
+    patch('Faces',f,'Vertices',v,'FaceColor','black','FaceAlpha',.1)
+
+    f=[1,2,3];
+    v=[node4;node5;node6;];
+    patch('Faces',f,'Vertices',v,'FaceColor','black','FaceAlpha',.1)
+
+    f=[1,2,3,4];
+    v=[node1;node2;node5;node4];
+    patch('Faces',f,'Vertices',v,'FaceColor','black','FaceAlpha',.1)
+
+    f=[1,2,3,4];
+    v=[node2;node3;node6;node5];
+    patch('Faces',f,'Vertices',v,'FaceColor','black','FaceAlpha',.1)
+
+    f=[1,2,3,4];
+    v=[node1;node3;node6;node4];
+    patch('Faces',f,'Vertices',v,'FaceColor','black','FaceAlpha',.1)
+
+end
+
 barNum=size(assembly.bar.A_Vec);
 barNum=barNum(1);
 barConnect=assembly.bar.barConnect_Mat;
@@ -38,13 +73,10 @@ end
 
 % Number Dots
 node0=assembly.node.coordinates_Mat;
-A=size(assembly.node.coordinates_Mat);
-N=A(1);
 
 sprIJKL=obj.assembly.rotSpr.rotSprIJKL_Mat;
 sprNum=size(sprIJKL);
 sprNum=sprNum(1);
-
 
 for i=1:sprNum
     x=0.5*(node0(sprIJKL(i,2),1)+...

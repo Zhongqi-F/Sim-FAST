@@ -1,0 +1,5 @@
+Here are all the solvers that can be used to solve for 
+the deformation of an assembly. Please note that these 
+solvers do not directly act on an element class. 
+We need to first assemble elements into an assembly
+before applying the nonlinear solvers.

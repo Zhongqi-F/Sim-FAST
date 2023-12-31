@@ -1,3 +1,6 @@
+%% Solve for the local stiffness of rotational spring
+% This function use the central difference method to calculate the local
+% stiffness matrix of the rotational spring element. 
 
 function [Klocal]=LocalStiff(obj,X,theta0,K)
 

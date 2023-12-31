@@ -1,4 +1,3 @@
-%% Initialize the solver
 clear all;
 clc;
 close all;
@@ -24,7 +23,7 @@ wedgeK=10^10; % stiffness of the wedge
 perturbationLevel=0.05*10^(-3);
 data=zeros(30,10);
 bar=Elements_Bars;
-spr=Elements_RotSprings;
+rotSpr=Elements_RotSprings;
 node=Elements_Nodes;
 wedge=Elements_WedgeSolid;
 
@@ -114,7 +113,7 @@ assembly=Assembly_ThickOrigami();
 assembly.wedge=wedge;
 assembly.node=node;
 assembly.bar=bar;
-assembly.spr=spr;
+assembly.rotSpr=rotSpr;
 
 assembly.AddCompliantCrease([4,6],[11,12],5,13,tc,gap,E,G)
 assembly.AddCompliantCrease([13,14],[20,18],11,19,tc,gap,E,G)
@@ -127,7 +126,7 @@ assembly.InitializeAssembly();
 
 
 %% Plot for investigation
-plots=Plot();
+plots=Plot_ThickOrigami();
 plots.displayRange=0.1;
 plots.displayRangeRatio=1;
 plots.assembly=assembly;
@@ -150,8 +149,8 @@ sf.supp=[31,1,1,1;
          33,1,1,1;
          34,1,1,1;];
 
-sf.targetRot=spr.theta_Current_Vec;
-originalRot=spr.theta_Current_Vec;
+sf.targetRot=rotSpr.theta_Current_Vec;
+originalRot=rotSpr.theta_Current_Vec;
 
 targetRate=0.3;
 

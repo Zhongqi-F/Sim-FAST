@@ -5,8 +5,7 @@ function InitializeAssembly(obj)
     obj.node.currentU_Mat = zeros(size(obj.node.coordinates_Mat));
     obj.node.currentExtForce_Mat = zeros(size(obj.node.coordinates_Mat));
 
-    obj.bar.InitializeLengthVec(obj.node);
-    obj.rotSpr.InitializeSpr(obj.node);
+    obj.rotSpr.InitializeSpr(obj.node)
+    obj.bar.InitializeLengthVec(obj.node)
 
-    obj.wedge.InitializeL0ref(obj.node);
 end

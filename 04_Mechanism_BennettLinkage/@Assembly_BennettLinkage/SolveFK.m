@@ -3,9 +3,8 @@
 function [T,K]=SolveFK(obj,U)
 
     [Tbar,Kbar]=obj.bar.SolveFK(obj.node,U);
-    [Tspr,Kspr]=obj.rotSpr.SolveFK(obj.node,U);
-    [Tw,Kw]=obj.wedge.SolveFK(obj.node,U);
+    [Trs,Krs]=obj.rotSpr.SolveFK(obj.node,U);
     
-    T=Tbar+Tspr+Tw;
-    K=Kbar+Kspr+Kw;
+    T=Tbar+Trs;
+    K=Kbar+Krs;
 end

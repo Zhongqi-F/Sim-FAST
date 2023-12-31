@@ -1,6 +1,9 @@
+%% This funciton initialize the rotational spring elements
+% The initialization process include calculating the current folding angle
+% and the current stress free angle of the spring elements. We set the
+% current state to be the stress-free state. 
 
 function InitializeSpr(obj,node)
-
 
     rotSprIJKL=obj.rotSprIJKL_Mat;
     numSpr=size(rotSprIJKL);
@@ -8,6 +11,7 @@ function InitializeSpr(obj,node)
 
     % check the ijkl assignment to make sure they are the same direction
     for i=1:numSpr
+
         n1=rotSprIJKL(i,1);
         n2=rotSprIJKL(i,2);
         n3=rotSprIJKL(i,3);
@@ -34,7 +38,5 @@ function InitializeSpr(obj,node)
         obj.theta_StressFree_Vec(i)=obj.theta_Current_Vec(i);
 
     end
-
-
 end
 

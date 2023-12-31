@@ -1,6 +1,6 @@
-%% Assemble stiffness of rotational springs
+%% Assemble stiffness matrix of rotational springs
 % This function assembles the global stiffness matrix of the rotational
-% spring elements
+% spring elements.
 
 function [Krs]=GlobalStiff(obj,node,U)
     
