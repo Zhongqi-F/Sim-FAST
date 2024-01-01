@@ -1,8 +1,4 @@
-
-
-
-
-classdef Plot < handle
+classdef Plot_Origami < handle
 
     properties
         % Assembly of structure
@@ -21,9 +17,10 @@ classdef Plot < handle
         y0=0;
 
         % hold time for gif
-        holdTime=0.01;
+        holdTime=0.01;        
 
-        
+        % Animation file name
+        fileName='Animation.gif'
 
     end
 
@@ -34,17 +31,11 @@ classdef Plot < handle
         % Plot the shape of the system with bar number
         Plot_Shape_BarNumber(obj);
 
-        % Plot the shape of the system with spring number
-        Plot_Shape_SprNumber(obj);
-
         % Plot the deformation animation
         Plot_DeformedHis(obj,Uhis)
 
         % Plot the deformed shape of the system
         Plot_DeformedShape(obj,U)
-
-
-
 
     end
 end

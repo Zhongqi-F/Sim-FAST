@@ -1,8 +1,5 @@
 
-
-
-
-classdef Plot_ThickOrigami < handle
+classdef Plot_Truss < handle
 
     properties
         % Assembly of structure
@@ -22,9 +19,9 @@ classdef Plot_ThickOrigami < handle
 
         % hold time for gif
         holdTime=0.01;
-        
-        % Animation file name
-        fileName='Animation.gif'
+
+        % the name for animation file
+        fileName='animation.gif'        
 
     end
 

@@ -86,25 +86,26 @@ assembly.node=node;
 assembly.InitializeAssembly();
 
 
-plot=Plot();
-plot.displayRangeRatio=0.1;
-plot.displayRange=5;
-plot.assembly=assembly;
+plots=Plot_Truss();
+plots.displayRangeRatio=0.1;
+plots.displayRange=5;
+plots.assembly=assembly;
 
-plot.Plot_Shape_NodeNumber()
-plot.Plot_Shape_BarNumber()
+plots.Plot_Shape_NodeNumber()
+plots.Plot_Shape_BarNumber()
 
 %% Set up the loading solver
 action=Solver_NR_TrussAction;
-
 action.assembly=assembly;
 action.supp=[1,1,1,1;
          6,1,1,1;
          15,1,1,1;];
 
+% Set up the stress-free length of the bars
 action.targetL0=bar.L0_Vec;
 dL0=0.2;
 
+% Set up how the stress-free lengths of bars change
 action.targetL0(14)=action.targetL0(14)-dL0;
 action.targetL0(15)=action.targetL0(15)-dL0;
 action.targetL0(16)=action.targetL0(16)-dL0;
@@ -115,8 +116,9 @@ action.targetL0(19)=action.targetL0(19)+dL0;
 
 Uhis=action.Solve();
 
-plot.Plot_DeformedHis(Uhis);
-plot.Plot_DeformedShape(squeeze(Uhis(end,:,:)));
+plots.fileName='ActiveTruss.gif';
+plots.Plot_DeformedHis(Uhis);
+plots.Plot_DeformedShape(squeeze(Uhis(end,:,:)));
 
 
 

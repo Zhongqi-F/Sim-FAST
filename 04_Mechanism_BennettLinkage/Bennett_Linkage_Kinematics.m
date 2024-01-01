@@ -209,14 +209,14 @@ assembly.rotSpr=rotSpr;
 assembly.InitializeAssembly()
 
 %% Plot for investigation
-plot=Plot();
-plot.displayRange=0.1;
-plot.displayRangeRatio=1;
-plot.assembly=assembly;
+plots=Plot_Linkage();
+plots.displayRange=0.1;
+plots.displayRangeRatio=1;
+plots.assembly=assembly;
 
-plot.Plot_Shape_NodeNumber()
-plot.Plot_Shape_BarNumber()
-plot.Plot_Shape_SprNumber()
+plots.Plot_Shape_NodeNumber()
+plots.Plot_Shape_BarNumber()
+plots.Plot_Shape_SprNumber()
 
 
 
@@ -251,12 +251,13 @@ sf.targetRot(1)=sf.targetRot(1)+0.7*pi;
 
 
 sf.increStep=200;
-sf.tol=10^-8;
+sf.tol=10^-7;
 sf.iterMax=50;
 
 Uhis=sf.Solve();
 
-plot.displayRange=0.15;
-plot.Plot_DeformedShape(squeeze(Uhis(end,:,:)))
-plot.Plot_DeformedHis(Uhis)
+plots.displayRange=0.15;
+plots.fileName='Bennett_Linkage_Kinematics.gif';
+plots.Plot_DeformedShape(squeeze(Uhis(end,:,:)))
+plots.Plot_DeformedHis(Uhis)
 

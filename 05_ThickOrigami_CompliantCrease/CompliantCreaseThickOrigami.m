@@ -2,7 +2,6 @@ clear all;
 clc;
 close all;
 
-
 %% Define the geometry of thick origami
 % This section of code is used to generate geometry of thick origami
 
@@ -175,5 +174,6 @@ sf.iterMax=50;
 Uhis=sf.Solve();
 
 plots.displayRange=0.15;
+plots.fileName='CompliantCreaseThickOrigami.gif';
 plots.Plot_DeformedShape(squeeze(Uhis(end,:,:)))
 plots.Plot_DeformedHis(Uhis)
