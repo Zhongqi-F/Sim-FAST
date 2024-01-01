@@ -152,7 +152,7 @@ dc.load=[13,0,0,-force;
          17,0,0,-force;
          18,0,0,-force;];
 
-dc.increStep=40;
+dc.increStep=50;
 dc.tol=10^-5;
 dc.iterMax=50;
 
@@ -160,9 +160,43 @@ Uhis=dc.Solve();
 
 plots.displayRange=0.15;
 plots.fileName='Kresling.gif';
-plots.Plot_DeformedShape(squeeze(Uhis(end,:,:)))
-plots.Plot_DeformedHis(Uhis)
+plots.Plot_DeformedShape(squeeze(Uhis(end,:,:)));
+plots.Plot_DeformedHis(Uhis);
 
 %% Find the reaction force and loading results
 
+forceHis=zeros(dc.increStep,1);
+UrefHis=zeros(dc.increStep,1);
 
+for i=1:dc.increStep
+    [F,K]=assembly.SolveFK(squeeze(Uhis(i,:,:)));
+    UrefHis(i)=Uhis(i,dc.selectedRefDisp(1),dc.selectedRefDisp(2));
+    forceHis(i)=F(dc.selectedRefDisp(2)+(dc.selectedRefDisp(1))*3);
+end
+
+figure
+plot(UrefHis,forceHis)
+xlabel('Z deformation of top node (m)') 
+ylabel('Applied Force (N)') 
+
+
+EnergyHis=zeros(dc.increStep,2);
+
+for i=1:dc.increStep
+    % rotational spring element
+    rotSpr.CalcStrainEnergy(node,squeeze(Uhis(i,:,:)));
+    EnergyHis(i,1)=sum(rotSpr.strainEnergy_Vec);
+
+    % bar element
+    bar.CalcStrainEnergy(node,squeeze(Uhis(i,:,:)));
+    EnergyHis(i,2)=sum(bar.currentStrainEnergy_Vec);
+
+end
+
+figure
+hold on
+plot(UrefHis,EnergyHis(:,1))
+plot(UrefHis,EnergyHis(:,2))
+xlabel('Z deformation of top node (m)') 
+ylabel('Strain Energy (J)')
+legend('rotational springs','bars')

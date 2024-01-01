@@ -56,7 +56,7 @@ classdef Elements_Bars < handle
         [Tbar,Kbar]=SolveFK(obj,node,U)
 
         % Back calculate internal strain energy;
-        CalcStrainEnergy(node,U)
+        CalcStrainEnergy(obj,node,U)
 
 
     end
