@@ -7,18 +7,21 @@ rotSpr=Elements_RotSprings();
 rotSprFlat=Elements_RotSprings_Flat();
 
 % number of cells
-M=1;
-N=1;
+M=3;
+N=3;
 
 % grid dimension
 L=0.05;
-offset=0.005;
+offset=0.01;
 
 % Stiffness parameters
 barArea=0.00001;
 barE=2*10^9;
 bendStiff=1;
 twistStiff=100;
+
+% bar area in the z-direction
+zBarFactor=0.0001;
 
 % Applied load
 force=1;
@@ -106,8 +109,13 @@ rotSprNum=rotSprNum(1);
 rotSprFlatNum=size(rotSprFlat.rotSprIJK_Mat);
 rotSprFlatNum=rotSprFlatNum(1);
 
+
 bar.A_Vec=barArea*ones(barNum,1);
 bar.E_Vec=barE*ones(barNum,1);
+
+verticalBarStart=(M+1)*N+(N+1)*M+1;
+bar.A_Vec(verticalBarStart:end)=bar.A_Vec(verticalBarStart:end)/zBarFactor;
+
 rotSpr.rotSprK_Vec=twistStiff*ones(rotSprNum,1);
 rotSprFlat.rotSprK_Vec=bendStiff*ones(rotSprFlatNum,1);
 
@@ -123,7 +131,7 @@ assembly.InitializeAssembly()
 
 %% Plot for investigation
 plots=Plot_Knit();
-plots.displayRange=0.1;
+plots.displayRange=0.15;
 plots.displayRangeRatio=0.2;
 plots.assembly=assembly;
 
@@ -165,7 +173,7 @@ nr.supp=[nr.supp;
 
 nr.load=[loadIndex',zeros(M,1),force*ones(M,1),zeros(M,1)];
 
-nr.increStep=10;
+nr.increStep=40;
 nr.tol=10^-5;
 
 Uhis=nr.Solve();
