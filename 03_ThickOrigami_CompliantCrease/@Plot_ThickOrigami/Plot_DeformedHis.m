@@ -12,7 +12,7 @@ assembly=obj.assembly;
 undeformedNode=assembly.node.coordinates_Mat;
 
 pauseTime=obj.holdTime;
-filename='Animation.gif';
+filename=obj.fileName;
 
 h=figure;
 
