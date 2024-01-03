@@ -1,9 +1,12 @@
 ## Simulator For Active STructures (Sim-FAST)
 
-I am hoping to create an educational code package for active structures, including tensegrity, origami, trusses, mechanisms, metamaterials, and many others. 
+I am hoping to create an educational code package for active structures, 
+including tensegrity, origami, trusses, mechanisms, metamaterials, and many others. 
 This package is still under construction.
 Eventually, there will be a note associated with this package that will be published. 
 Hoepfully I will get the opportunity of teaching it one day. 
+
+The following GIF animation shows a few working examples.
 
 
 ## As of Jan 2nd. 
@@ -16,9 +19,13 @@ solver. However, it looks like I do want to code a set of elements that use the 
 solution because tuning the step size for central difference can be tricky. Probably will start working on those as I get more time. 
 
 Not particularly sure how much effort I can spend on this as the semester start. 
-Will continue working on the code when have time.
+Will continue working on the code when have time. 
 
 ![alt text](https://github.com/zzhuyii/Sim-FAST/blob/main/01_ActiveTruss_MorphingStructure/ActiveTruss.gif)
 
 ![alt text](https://github.com/zzhuyii/Sim-FAST/blob/main/02_ThinOrigami_BistableKresling/Kresling.gif)
+
+![alt text](https://github.com/zzhuyii/Sim-FAST/blob/main/03_ThickOrigami_CompliantCrease/CompliantCreaseThickOrigami.gif)
+
+
 
