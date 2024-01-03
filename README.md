@@ -17,3 +17,8 @@ solution because tuning the step size for central difference can be tricky. Prob
 
 Not particularly sure how much effort I can spend on this as the semester start. 
 Will continue working on the code when have time.
+
+![alt text](https://github.com/zzhuyii/Sim-FAST/blob/main/01_ActiveTruss_MorphingStructure/ActiveTruss.gif)
+
+![alt text](https://github.com/zzhuyii/Sim-FAST/blob/main/02_ThinOrigami_BistableKresling/Kresling.gif)
+
