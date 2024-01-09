@@ -20,6 +20,9 @@ classdef Elements_Bars < handle
         % Current Strain Energy of the bar, stored as a vector (Nb*1)
         currentStrainEnergy_Vec
 
+        % Current Strain of the bar, stored as a vector (Nb*1)
+        currentStrain_Vec
+
         % Connection information of the bar, stored as a matrix (Nb*2)
         barConnect_Mat
 
@@ -54,10 +57,6 @@ classdef Elements_Bars < handle
         % stiffness of the bar elements (making use of the above four 
         % functions). 
         [Tbar,Kbar]=SolveFK(obj,node,U)
-
-        % Back calculate internal strain energy;
-        CalcStrainEnergy(obj,node,U)
-
 
     end
 end

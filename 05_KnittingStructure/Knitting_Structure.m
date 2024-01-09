@@ -79,6 +79,7 @@ for i=1:M
     for j=1:N
         bar.barConnect_Mat=[bar.barConnect_Mat;
             NodeNumAfterY+(j-1)*(M+2)+i+1,(i-1)*(N+2)+j+1];
+        
     end
 end
 

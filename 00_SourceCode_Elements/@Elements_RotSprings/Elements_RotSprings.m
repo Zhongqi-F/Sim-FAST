@@ -16,7 +16,7 @@ classdef Elements_RotSprings < handle
         theta_Current_Vec;
 
         % Current Strain Energy
-        strainEnergy_Vec;
+        currentStrainEnergy_Vec;
 
         % step for central difference
         delta=10^-8;
@@ -51,9 +51,6 @@ classdef Elements_RotSprings < handle
 
         % This function initialize the springs
         InitializeSpr(obj,node)
-
-        % Solve strain energy and current fold angle
-        CalcStrainEnergy(obj,node,U)
 
     end
 end

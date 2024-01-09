@@ -184,11 +184,11 @@ EnergyHis=zeros(dc.increStep,2);
 
 for i=1:dc.increStep
     % rotational spring element
-    rotSpr.CalcStrainEnergy(node,squeeze(Uhis(i,:,:)));
-    EnergyHis(i,1)=sum(rotSpr.strainEnergy_Vec);
+    rotSpr.SolveFK(node,squeeze(Uhis(i,:,:)));
+    EnergyHis(i,1)=sum(rotSpr.currentStrainEnergy_Vec);
 
     % bar element
-    bar.CalcStrainEnergy(node,squeeze(Uhis(i,:,:)));
+    bar.SolveFK(node,squeeze(Uhis(i,:,:)));
     EnergyHis(i,2)=sum(bar.currentStrainEnergy_Vec);
 
 end
