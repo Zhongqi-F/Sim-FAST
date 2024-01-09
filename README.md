@@ -13,7 +13,7 @@ The following GIF animation shows a few working examples.
 
 The code is working for a few examples, including active truss, thin origami, thick origami, mechanism, and knitting structures. 
 My original thought is that using central difference methods for deriving the elements (internal 
-forces and stiffness) can be very useful for an education package because it is fast. 
+forces and stiffness) can be very useful for an education package because it is fast to teach (not necessary fast to run in a code). 
 When teaching, we can quickly cover the derivation of elements and have time to focus on nonlinear 
 solver. However, it looks like I do want to code a set of elements that use the exact
 solution because tuning the step size for central difference can be tricky. Probably will start working on those as I get more time. 
