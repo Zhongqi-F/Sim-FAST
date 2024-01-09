@@ -30,8 +30,5 @@ classdef Solver_NR_Folding  < handle
         % Solve for the equilibrium position
         Uhis=Solve(obj);
 
-        % Modify stiffness matrix and loading force for support
-        [K,unbalance]=ModKforSupp(obj,K,supp,unbalance);
-
     end
 end

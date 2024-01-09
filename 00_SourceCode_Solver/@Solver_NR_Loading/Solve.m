@@ -52,7 +52,7 @@ function [Uhis]=Solve(obj)
             % calculate the unbalanced force
             unbalance=currentAppliedForce+lambda*loadVec-T; 
             
-            [K,unbalance]=obj.ModKforSupp(K,supp,unbalance);
+            [K,unbalance]=ModKforSupp(K,supp,unbalance);
             K=sparse(K);
                         
             dUtemp=(K\unbalance);
@@ -66,4 +66,6 @@ function [Uhis]=Solve(obj)
 
         Uhis(i,:,:)=U;
     end  
+
+    assembly.node.currentU_Mat=U;
 end

@@ -251,7 +251,7 @@ sf.targetRot(1)=sf.targetRot(1)+0.7*pi;
 
 
 sf.increStep=200;
-sf.tol=10^-7;
+sf.tol=10^-6;
 sf.iterMax=50;
 
 Uhis=sf.Solve();

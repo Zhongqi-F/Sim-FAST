@@ -49,7 +49,7 @@ function [Uhis]=Solve(obj)
             % calculate the unbalanced force
             unbalance=currentAppliedForce-T; 
             
-            [K,unbalance]=obj.ModKforSupp(K,supp,unbalance);
+            [K,unbalance]=ModKforSupp(K,supp,unbalance);
             K=sparse(K);          
 
             deltaU=(unbalance'/K)';

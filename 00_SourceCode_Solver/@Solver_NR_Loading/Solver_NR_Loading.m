@@ -36,8 +36,5 @@ classdef Solver_NR_Loading < handle
         % Solve for the equilibrium results
         Uhis=Solve(obj);
 
-        % Modify stiffness matrix and loading force for support
-        [K,unbalance]=ModKforSupp(obj,K,supp,unbalance);
-
     end
 end
