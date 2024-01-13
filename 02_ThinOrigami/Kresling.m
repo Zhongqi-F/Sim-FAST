@@ -129,6 +129,28 @@ plots.Plot_Shape_NodeNumber()
 plots.Plot_Shape_BarNumber()
 plots.Plot_Shape_SprNumber()
 
+% set up panels for ploting
+panelNum=1;
+for i=1:M
+    for j=1:N
+        if j ~=N
+            plots.panelConnection{panelNum}=[
+                (i-1)*N+j,(i-1)*N+j+1,(i)*N+j+1];
+            panelNum=panelNum+1;
+            plots.panelConnection{panelNum}=[
+                (i-1)*N+j,(i)*N+j,(i)*N+j+1];
+            panelNum=panelNum+1;
+        else
+            plots.panelConnection{panelNum}=[
+                (i-1)*N+j,(i-1)*N+1,(i)*N+j];
+            panelNum=panelNum+1;
+            plots.panelConnection{panelNum}=[
+                (i-1)*N+1,(i)*N+j,(i)*N+1];
+            panelNum=panelNum+1;
+        end
+    end
+end
+
 
 
 %% Setup the loading controller

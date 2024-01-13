@@ -47,4 +47,21 @@ for j=1:barNum
          [node1(3),node2(3)],'Color','k');
 end
 
+panelNum=size(obj.panelConnection);
+panelNum=panelNum(2);
+
+for i=1:panelNum
+    nodeNumVec=obj.panelConnection{i};
+
+    f=[];
+    v=[];
+    for j=1:length(nodeNumVec)
+        f=[f,j];
+        v=[v;deformNode(nodeNumVec(j),:)];
+    end
+
+    patch('Faces',f,'Vertices',v,'FaceColor','yellow')
+
+end
+
 

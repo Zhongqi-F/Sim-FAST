@@ -22,6 +22,9 @@ classdef Plot_Origami < handle
         % Animation file name
         fileName='Animation.gif'
 
+        % Panel information for plotting
+        panelConnection={}
+
     end
 
     methods

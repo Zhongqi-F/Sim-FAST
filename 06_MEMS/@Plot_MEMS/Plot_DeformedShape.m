@@ -1,6 +1,6 @@
 %% plot the deformation history of the simulated results.
 
-function Plot_DeformedShape(obj,U)
+function Plot_DeformedShape(obj,Uundeformed,Udeformed)
 
 View1=obj.viewAngle1;
 View2=obj.viewAngle2;
@@ -8,7 +8,7 @@ Vsize=obj.displayRange;
 Vratio=obj.displayRangeRatio;
 
 assembly=obj.assembly;
-undeformedNode=assembly.node.coordinates_Mat;
+undeformedNode=assembly.node.coordinates_Mat+Uundeformed;
 
 figure;
 
@@ -37,14 +37,30 @@ for j=1:barNum
          [node1(3),node2(3)],'Color',[.7 .7 .7]);
 end
 
-deformNode=undeformedNode+U;
+deformNode=assembly.node.coordinates_Mat+Udeformed;
 
 for j=1:barNum
     node1=deformNode(barConnect(j,1),:);
     node2=deformNode(barConnect(j,2),:);
     line([node1(1),node2(1)],...
          [node1(2),node2(2)],...
-         [node1(3),node2(3)],'Color','k');
+         [node1(3),node2(3)],'Color','k','Linewidth',1.4);
 end
 
+panelNum=size(obj.panelConnection);
+panelNum=panelNum(2);
+
+for i=1:panelNum
+    nodeNumVec=obj.panelConnection{i};
+
+    f=[];
+    v=[];
+    for j=1:length(nodeNumVec)
+        f=[f,j];
+        v=[v;deformNode(nodeNumVec(j),:)];
+    end
+
+    patch('Faces',f,'Vertices',v,'FaceColor','black','FaceAlpha',0.2)
+
+end
 

@@ -114,9 +114,12 @@ action.targetL0(17)=action.targetL0(17)+dL0;
 action.targetL0(18)=action.targetL0(18)+dL0;
 action.targetL0(19)=action.targetL0(19)+dL0;
 
+
+
 Uhis=action.Solve();
 
 plots.fileName='ActiveTruss.gif';
+plots.activeTrussNum=[14,15,16,17,18,19];
 plots.Plot_DeformedHis(Uhis);
 plots.Plot_DeformedShape(squeeze(Uhis(end,:,:)));
 

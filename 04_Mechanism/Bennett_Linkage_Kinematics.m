@@ -219,6 +219,26 @@ plots.Plot_Shape_BarNumber()
 plots.Plot_Shape_SprNumber()
 
 
+plots.panelConnection{1}=[1,2,6,5];
+plots.panelConnection{2}=[2,3,7,6];
+plots.panelConnection{3}=[3,4,8,7];
+plots.panelConnection{4}=[4,1,5,8];
+
+plots.panelConnection{5}=[5 6 12 11];
+plots.panelConnection{6}=[6 9 13 12];
+plots.panelConnection{7}=[9 10 14 13];
+plots.panelConnection{8}=[5 10 14 11];
+
+plots.panelConnection{9}=[12 13 19 18];
+plots.panelConnection{10}=[13 16 20 19];
+plots.panelConnection{11}=[16 15 17 20];
+plots.panelConnection{12}=[15 12 18 17];
+
+plots.panelConnection{13}=[17 18 2 23];
+plots.panelConnection{14}=[17 22 24 23];
+plots.panelConnection{15}=[22 21 3 24];
+plots.panelConnection{16}=[21 18 2 3];
+
 
 %% Find alpha angle
 % This is for comparing with the analytical solution
@@ -258,6 +278,6 @@ Uhis=sf.Solve();
 
 plots.displayRange=0.15;
 plots.fileName='Bennett_Linkage_Kinematics.gif';
-plots.Plot_DeformedShape(squeeze(Uhis(end,:,:)))
-plots.Plot_DeformedHis(Uhis)
+plots.Plot_DeformedShape(squeeze(Uhis(150,:,:)))
+% plots.Plot_DeformedHis(Uhis)
 

@@ -9,7 +9,7 @@ function [Tbar,Kbar]=SolveFK(obj,node,U)
         [Tbar]=Bar_GlobalForce(obj,node,U,Sx);
         [Kbar]=Bar_GlobalStiffAssemble(obj,node,U,Sx,C);
 
-        obj.currentStrain_Vec=Sx;
+        obj.currentStrain_Vec=Ex;
         obj.currentStrainEnergy_Vec=1/2*obj.E_Vec.*obj.A_Vec.*obj.L0_Vec.*Ex.*Ex;
 
 end

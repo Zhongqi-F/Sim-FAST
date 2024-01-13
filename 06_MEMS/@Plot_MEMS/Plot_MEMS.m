@@ -22,6 +22,9 @@ classdef Plot_MEMS < handle
         % Animation file name
         fileName='Animation.gif'
 
+        % Panel information for plotting
+        panelConnection={}
+
     end
 
     methods
@@ -35,7 +38,7 @@ classdef Plot_MEMS < handle
         Plot_DeformedHis(obj,Uhis)
 
         % Plot the deformed shape of the system
-        Plot_DeformedShape(obj,U)
+        Plot_DeformedShape(obj,Uundeformed,Udeformed)
 
     end
 end

@@ -23,6 +23,9 @@ classdef Plot_Truss < handle
         % the name for animation file
         fileName='animation.gif'        
 
+        % number of active truss (will be plotted with different color)
+        activeTrussNum
+
     end
 
     methods

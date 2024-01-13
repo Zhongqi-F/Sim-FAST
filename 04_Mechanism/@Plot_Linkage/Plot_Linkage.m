@@ -22,6 +22,9 @@ classdef Plot_Linkage < handle
         % Animation file name
         fileName='Animation.gif'
 
+        % panel information for plotting
+        panelConnection={}
+
     end
 
     methods
