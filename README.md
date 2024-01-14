@@ -10,6 +10,11 @@ The following Intro Figure shows a few working examples.
 
 ![alt text](https://github.com/zzhuyii/Sim-FAST/blob/main/Figures/Intro.png)
 
+When using the code, please add "00_SourceCode_Elements" and "00_SourceCode_Solver" 
+to the path in MATLAB. For some examples, we can use "00_SourceCode_Elements_Advanced" 
+for faster computation. However, advanced elements (vectorized) are not available for
+every example for now. 
+
 ## As of Jan 13th. 
 
 The code is working for a few examples, including active truss, thin origami, thick origami, mechanism, and knitting structures. 
