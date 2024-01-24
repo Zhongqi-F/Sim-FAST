@@ -50,8 +50,8 @@ for i=1:Incre
     panelNum=size(obj.panelConnection);
     panelNum=panelNum(2);
 
-    for i=1:panelNum
-        nodeNumVec=obj.panelConnection{i};
+    for k=1:panelNum
+        nodeNumVec=obj.panelConnection{k};
     
         f=[];
         v=[];
