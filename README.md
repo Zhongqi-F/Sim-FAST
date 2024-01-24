@@ -24,7 +24,7 @@ deformation, implicit and explicit nonlinear solvers, and integration of
 simulation package to a student trying to study active structure. 
 This is why I started this package here. 
 
-## As of Jan 13th. 
+## As of Jan 24th. 
 
 The code is working for a few examples, including active truss, thin origami, 
 thick origami, mechanism, and knitting structures. 
