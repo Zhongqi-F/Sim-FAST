@@ -25,8 +25,8 @@ perturbationLevel=0*10^(-3);
 
 data=zeros(30,10);
 
-bar=Elements_Bars;
-rotSpr=Elements_RotSprings;
+bar=Vec_Elements_Bars;
+rotSpr=Vec_Elements_RotSprings;
 node=Elements_Nodes;
 
 bar.A_Vec=zeros(5,1);
@@ -279,5 +279,5 @@ Uhis=sf.Solve();
 plots.displayRange=0.15;
 plots.fileName='Bennett_Linkage_Kinematics.gif';
 plots.Plot_DeformedShape(squeeze(Uhis(150,:,:)))
-% plots.Plot_DeformedHis(Uhis)
+plots.Plot_DeformedHis(Uhis(1:10:end,:,:))
 

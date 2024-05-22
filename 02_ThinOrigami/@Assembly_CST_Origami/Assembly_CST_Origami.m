@@ -1,12 +1,12 @@
 
-classdef Assembly_Origami < handle
+classdef Assembly_CST_Origami < handle
 
     properties
         % Nodes
         node
 
         % Bars
-        bar
+        cst
 
         % Rotational Springs
         rotSpr

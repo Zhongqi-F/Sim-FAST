@@ -26,7 +26,7 @@ node.coordinates_Mat=[0 0 t;
                       3.5 0.5 0; ];
 
 % Define the bars
-bar=Elements_Bars;
+bar=CD_Elements_Bars;
 
 % The bars for the square base
 bar.barConnect_Mat=[1,2;
