@@ -1,6 +1,6 @@
 %% Displacement controled method method. 
 
-function [Uhis]=Solve(obj)
+function [Uhis,Fhis]=Solve(obj)
 
     % initialize and set up storage matrix for Uhis
     increStep=obj.increStep;
@@ -18,6 +18,7 @@ function [Uhis]=Solve(obj)
     A=size(U);
     NodeNum=A(1);
     Uhis=zeros(increStep,NodeNum,3);
+    Fhis=zeros(increStep,NodeNum*3);
 
     % Find the external forces that is currently applied on the structure
     currentAppliedForce=zeros(3*NodeNum,1);    
@@ -126,6 +127,7 @@ function [Uhis]=Solve(obj)
 
         % Store the found equilibrium
         Uhis(i,:,:)=U;
+        Fhis(i,:)=T;
    
     end    
 end

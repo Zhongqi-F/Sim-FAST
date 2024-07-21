@@ -8,7 +8,7 @@ function [Uhis]=Solve(obj)
     supp=obj.supp;  
 
     assembly=obj.assembly;
-    U=assembly.node.currentU_Mat;
+    U=assembly.node.current_U_mat;
 
     A=size(U);
     NodeNum=A(1);
@@ -17,7 +17,7 @@ function [Uhis]=Solve(obj)
     % Find the external forces that is currently applied on the structure
     currentAppliedForce=zeros(3*NodeNum,1);    
     for i=1:NodeNum
-        currentAppliedForce(3*(i-1)+1:3*i) = assembly.node.currentExtForce_Mat(i,:);
+        currentAppliedForce(3*(i-1)+1:3*i) = assembly.node.current_ext_force_mat(i,:);
     end  
 
 
@@ -27,7 +27,7 @@ function [Uhis]=Solve(obj)
     count=1;
 
     % find the zero strain angle, before and after the analysis
-    sprZeroStrain_before=assembly.rotSpr.theta_Current_Vec;
+    sprZeroStrain_before=assembly.rotSpr.theta_current_vec;
     sprZeroStrain_after=obj.targetRot;
     
         
@@ -42,7 +42,7 @@ function [Uhis]=Solve(obj)
              
         while and(step<iterMax,R>tol)
             
-            assembly.rotSpr.theta_StressFree_Vec=...
+            assembly.rotSpr.theta_stress_free_vec=...
                 sprZeroStrain_current;
             [T,K]=assembly.SolveFK(U);
 
@@ -67,6 +67,6 @@ function [Uhis]=Solve(obj)
         count=count+1;
     end
 
-    assembly.node.currentU_Mat=U;
+    assembly.node.current_U_mat=U;
 end
 

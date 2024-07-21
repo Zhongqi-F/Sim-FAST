@@ -8,20 +8,20 @@ classdef Elements_Nodes < handle
     properties
         % Nodal corridnates stored as a matrix (N*3)
         % Total number of node (N)
-        coordinates_Mat
+        coordinates_mat
 
         % Mass of nodes, stored as a vector (N*1)
-        mass_Vec
+        mass_vec
 
         % Current deformation, stored as a Matrix (N*3)
-        currentU_Mat
+        current_U_mat
 
         % Current external force (N*3)
-        currentExtForce_Mat
+        current_ext_force_mat
     end
 
     methods   
-        % Finde the mass matrix of the system
+        % Find the mass matrix of the system
         M=FindMassMat(obj)
     end
 end

@@ -1,4 +1,3 @@
-
 function M=FindMassMat(obj)
 
     nodeNum=size(obj.coordinates_Mat);
