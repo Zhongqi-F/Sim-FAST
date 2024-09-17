@@ -18,12 +18,6 @@ classdef CD_Elements_Bars < handle
         % Stress Free Length of the bar, stored as a vector (Nb*1)
         L0_vec
 
-        % Current Strain Energy of the bar, stored as a vector (Nb*1)
-        energy_current_vec
-
-        % Current Strain of the bar, stored as a vector (Nb*1)
-        strain_current_vec
-
         % step size for evaluating gradient and hessian
         delta=10^-8;
 
@@ -55,6 +49,9 @@ classdef CD_Elements_Bars < handle
         % stiffness of the bar elements (making use of the above four 
         % functions). 
         [Tbar,Kbar]=Solve_FK(obj,node,U)
+
+        % This function solve for the strain of each bar
+        [strain_vec]=Solve_Strain(obj,node,U) 
 
     end
 end

@@ -11,7 +11,7 @@ function [Uhis]=Solve(obj)
     load=obj.load;   
   
     assembly=obj.assembly;
-    U=assembly.node.currentU_Mat;
+    U=assembly.node.current_U_mat;
 
     A=size(U);
     NodeNum=A(1);
@@ -23,7 +23,7 @@ function [Uhis]=Solve(obj)
     currentAppliedForce=zeros(3*NodeNum,1);    
     for i=1:NodeNum
         currentAppliedForce(3*(i-1)+1:3*i) = ...
-            assembly.node.currentExtForce_Mat(i,:);
+            assembly.node.current_ext_force_mat(i,:);
     end  
     
     % Assemble the load vector
@@ -47,12 +47,12 @@ function [Uhis]=Solve(obj)
         while and(step<iterMax,R>tol)
 
             % find the internal force and stiffness of system
-            [T,K]=assembly.SolveFK(U);
+            [T,K]=assembly.Solve_FK(U);
 
             % calculate the unbalanced force
             unbalance=currentAppliedForce+lambda*loadVec-T; 
             
-            [K,unbalance]=ModKforSupp(K,supp,unbalance);
+            [K,unbalance]=Mod_K_For_Supp(K,supp,unbalance);
             K=sparse(K);
                         
             dUtemp=(K\unbalance);
@@ -67,5 +67,5 @@ function [Uhis]=Solve(obj)
         Uhis(i,:,:)=U;
     end  
 
-    assembly.node.currentU_Mat=U;
+    assembly.node.current_U_mat=U;
 end
