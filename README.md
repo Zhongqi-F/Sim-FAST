@@ -9,16 +9,25 @@ The following Intro Figure shows some working examples.
 More specifically, the model in this package represents an active structure 
 using nodal representations without rotational degrees-of-freedom. 
 Such formulation are similar to the pseudo-rigid-body model coined in the 
-pioneering research of Prof. Larry Howell. 
+pioneering research by Prof. Larry Howell. 
 The ability to capture phenonmena like bending and twisting is enabled 
 through using four-node and three-node rotational spring elements. 
 
 While the modeling approach may not be suitable for all active structures 
 (there probably exists no universal model for every problem), I believe the 
-framework is particularly suitable for educational purpose. 
+framework is particularly suitable for educational purpose and many 
+interesting research problems I myself have worked on. 
 This formulation is good for demonstrating element formulation for
 large deformation, implicit and explicit nonlinear solvers, 
 and integration of simulation package. 
+The formulation can be easily adopted for many active structures rapidly
+for a research project, giving people great flexibility. 
+Being non-black-box also make it easy to make changes to the code for 
+specific problems or connect the code with optimization packages for design. 
+I will not claim that the code package is a replacement to commercial 
+softwares (which is not the case), but it offers very different capabilities 
+that I myself does not find in commercial softwares. 
+
 I am constructing this package for my own students, I hope this will
 become their starting point to learn simulation for active structures. 
 However, I believe such an effort is worth made open-access, which is 
