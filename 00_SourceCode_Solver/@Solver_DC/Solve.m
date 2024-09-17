@@ -58,7 +58,7 @@ function [Uhis]=Solve(obj)
         % calculate the unbalanced force
         unbalance=currentAppliedForce+lambda*loadVec-T; 
 
-        [K,unbalance]=ModKforSupp(K,supp,unbalance);
+        [K,unbalance]=Mod_K_For_Supp(K,supp,unbalance);
         K=sparse(K);                         
 
         up1(:,i)=K\loadVec;  
@@ -102,7 +102,7 @@ function [Uhis]=Solve(obj)
             % calculate the unbalanced force
             unbalance=currentAppliedForce+lambda*loadVec-T; 
     
-            [K,unbalance]=ModKforSupp(K,supp,unbalance);
+            [K,unbalance]=Mod_K_For_Supp(K,supp,unbalance);
             K=sparse(K);  
 
             up=K\loadVec;
