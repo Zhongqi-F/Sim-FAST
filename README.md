@@ -29,24 +29,22 @@ I will not claim that the code package is a replacement to commercial
 softwares (which is not the case), but it offers very different capabilities 
 that I myself does not find in commercial softwares. 
 
+ 
+
+## A Living Textbook 
+
+This package is associated with  a living textbook component. 
+This living textbook is based on the live script function in MATLAB, where we can combine text, equations, figures, codes, functions, and results in one place. 
+This is really ideal for introducing simulation of active structures because we really need all these components side by side. 
 I am constructing this package for my own students, I hope this will
 become their starting point to learn simulation for active structures. 
 However, I believe such an effort is worth made open-access, which is 
-why I uploaded this package here. 
+why I uploaded this package here.
 
-## As of Sept 17th. 
-
-I decided to ultilize the "live code" capability in MATLAB to construct this code. 
-This is a good way of making educational code interactive.
-It also supports showing the code and figures side by side, which is very helpful. 
-The code is working for a decent number of examples, including active truss, thin origami, 
-thick origami, and Bennett mechanism.  
-Will continue working on the code when have time. 
-
-
-## Using the code
+![alt text](https://github.com/zzhuyii/Sim-FAST/blob/main/Figures/Features.png)
 
 **Please ensure running in MATLAB 2024a or newer version!**
+
 In the live script ("living textbook"), functions are created as we are working through examles. Thus, deifinition of functions are merged with global codes. Running such mixture of live script is only supported in 2024a or newer. In older MATLAB versions, functions must be in the back (which is not ideal when the code is integrated into textbooks). This "living-textbook" idea is only possible with the 2024a or newer MATLAB so Hey! We are definitely the state-of-the-art!
 
 When using the code, please add "00_SourceCode_Elements" and "00_SourceCode_Solver" 
