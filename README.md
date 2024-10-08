@@ -1,6 +1,6 @@
 ## Simulator For Active STructures (Sim-FAST)
 
-This is an educational code package for active structures, including tensegrity, 
+This is an educational and research code package for active structures, including tensegrity, 
 origami, trusses, mechanisms, metamaterials, and many others. **Please ensure running in MATLAB 2024a or newer version!**
 
 The following Intro Figure shows some working examples.
