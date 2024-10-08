@@ -47,8 +47,7 @@ Will continue working on the code when have time.
 ## Using the code
 
 **Please ensure running in MATLAB 2024a or newer version!**
-In the live script functions are created as we working through examles. This is only supported in 2024a or newer. 
-In older MATLAB versions, functions must be in the back (which makes the flow of text not ideal)
+In the live script ("living textbook"), functions are created as we are working through examles. Thus, deifinition of functions are merged with global codes. Running such mixture of live script is only supported in 2024a or newer. In older MATLAB versions, functions must be in the back (which is not ideal when the code is integrated into textbooks). This "living-textbook" idea is only possible with the 2024a or newer MATLAB so Hey! We are definitely the state-of-the-art!
 
 When using the code, please add "00_SourceCode_Elements" and "00_SourceCode_Solver" 
 to the path in MATLAB. For some examples, we can use "00_SourceCode_Elements_Advanced" 
