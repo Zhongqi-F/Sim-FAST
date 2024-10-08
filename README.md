@@ -45,6 +45,10 @@ Will continue working on the code when have time.
 
 ## Using the code
 
+**Please ensure running in MATLAB 2024a or newer version! **
+In the live script functions are created as we working through examles. This is only supported in 2024a or newer. 
+In older MATLAB versions, functions must be in the back (which makes the flow of text not ideal)
+
 When using the code, please add "00_SourceCode_Elements" and "00_SourceCode_Solver" 
 to the path in MATLAB. For some examples, we can use "00_SourceCode_Elements_Advanced" 
 for faster computation. 
