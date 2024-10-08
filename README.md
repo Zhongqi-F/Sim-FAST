@@ -41,7 +41,7 @@ become their starting point to learn simulation for active structures.
 However, I believe such an effort is worth made open-access, which is 
 why I uploaded this package here.
 
-![alt text](https://github.com/zzhuyii/Sim-FAST/blob/main/Figures/Features.png)
+![alt text](https://github.com/zzhuyii/Sim-FAST/blob/main/Figures/Feature.png)
 
 **Please ensure running in MATLAB 2024a or newer version!**
 
