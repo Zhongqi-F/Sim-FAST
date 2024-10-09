@@ -57,6 +57,13 @@ computation speed and they begin with "Vec_Elements". Basic elements begin with 
 representing that their derivation is based on central difference. 
 
 
+## Release Note:
 
+This project is released using the CC-BY 4.0 liscence. 
+You are free to share, adapt, or even commercially use the contant as long as appropriate credit is given to the creator. 
+Guidline about CC-BY 4.0 liscence is found here:
+https://creativecommons.org/licenses/by/4.0/deed.en
+
+Please cite this work as: Yi Zhu, Simulator for Active STructures: Sim-FAST - A Living Textbook, https://github.com/zzhuyii/Sim-FAST, Accessed at XX day XX month XX year. 
 
 
