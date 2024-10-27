@@ -7,16 +7,16 @@ function Initialize(obj,node)
     % 3. Solve the A_vec.
 
 
-    numCST=size(obj.cst_ijk_mat);
+    numCST=size(obj.node_ijk_mat);
     numCST=numCST(1);
 
     obj.A_vec=zeros(numCST,1);
 
     for i=1:numCST
         % Identify the nodal coordinates
-        n1=obj.cst_ijk_mat(i,1);
-        n2=obj.cst_ijk_mat(i,2);
-        n3=obj.cst_ijk_mat(i,3);
+        n1=obj.node_ijk_mat(i,1);
+        n2=obj.node_ijk_mat(i,2);
+        n3=obj.node_ijk_mat(i,3);
 
         nodeIndex=[n1,n2,n3];
 
@@ -43,9 +43,9 @@ function Initialize(obj,node)
         [betaVec,index]=sort(betaVec);
 
         % Reorganize the node sequence
-        obj.cst_ijk_mat(i,1)=nodeIndex(index(3));
-        obj.cst_ijk_mat(i,2)=nodeIndex(index(2));
-        obj.cst_ijk_mat(i,3)=nodeIndex(index(1));
+        obj.node_ijk_mat(i,1)=nodeIndex(index(3));
+        obj.node_ijk_mat(i,2)=nodeIndex(index(2));
+        obj.node_ijk_mat(i,3)=nodeIndex(index(1));
     end
 
     % Now that everything is organized in the right sequence, we can
@@ -53,9 +53,9 @@ function Initialize(obj,node)
     % optimize this part of the code, as we only use it once
     for i=1:numCST
         % Identify the nodal coordinates
-        n1=obj.cst_ijk_mat(i,1);
-        n2=obj.cst_ijk_mat(i,2);
-        n3=obj.cst_ijk_mat(i,3);
+        n1=obj.node_ijk_mat(i,1);
+        n2=obj.node_ijk_mat(i,2);
+        n3=obj.node_ijk_mat(i,3);
 
         % The three nodal coordinates of nodes
         X1=node.coordinates_mat(n1,:);

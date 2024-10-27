@@ -28,7 +28,7 @@ function [Uhis]=Solve(obj)
     count=1;
 
     % find the zero strain angle, before and after the analysis
-    L0_before=assembly.bar.L0_vec;
+    L0_before=assembly.actBar.L0_vec;
     L0_after=obj.targetL0;
     
         
@@ -43,14 +43,14 @@ function [Uhis]=Solve(obj)
              
         while and(step<iterMax,R>tol)
             
-            assembly.bar.L0_vec=...
+            assembly.actBar.L0_vec=...
                 L0_current;
-            [T,K]=assembly.SolveFK(U);
+            [T,K]=assembly.Solve_FK(U);
 
             % calculate the unbalanced force
             unbalance=currentAppliedForce-T; 
             
-            [K,unbalance]=ModKforSupp(K,supp,unbalance);
+            [K,unbalance]=Mod_K_For_Supp(K,supp,unbalance);
             K=sparse(K);          
 
             deltaU=(unbalance'/K)';

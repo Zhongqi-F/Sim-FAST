@@ -2,7 +2,7 @@ function [bar_strain_mat,l_Mat,x_reshape,trans_mat] ...
     = Solve_Bar_Strain(obj,U,X0)
     
     x=U+X0; % Deformed node
-    ijk_mat=obj.cst_ijk_mat; % Connectivity matrix
+    ijk_mat=obj.node_ijk_mat; % Connectivity matrix
 
     % Number of cst elements
     Ncst=size(ijk_mat);

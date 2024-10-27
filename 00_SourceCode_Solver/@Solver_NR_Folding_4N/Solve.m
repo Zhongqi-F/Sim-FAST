@@ -44,7 +44,7 @@ function [Uhis]=Solve(obj)
             
             assembly.rotSpr.theta_stress_free_vec=...
                 sprZeroStrain_current;
-            [T,K]=assembly.SolveFK(U);
+            [T,K]=assembly.Solve_FK(U);
 
             % calculate the unbalanced force
             unbalance=currentAppliedForce-T; 

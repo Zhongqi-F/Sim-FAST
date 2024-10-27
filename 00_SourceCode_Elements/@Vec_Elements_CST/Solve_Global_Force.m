@@ -1,6 +1,6 @@
 function [Tcst]=Solve_Global_Force(obj,U,dedx,cst_strain_mat,trans_mat)
 
-    cst_ijf=obj.cst_ijk_mat;
+    cst_ijf=obj.node_ijk_mat;
 
     Ncst=size(cst_ijf);
     Ncst=Ncst(1);
@@ -96,7 +96,7 @@ function [Tcst]=Solve_Global_Force(obj,U,dedx,cst_strain_mat,trans_mat)
     Tcst=zeros(1,3*nodeNum);  
 
     % Put local force values to the global matrix
-    ijk_mat=obj.cst_ijk_mat;
+    ijk_mat=obj.node_ijk_mat;
     ijk_mat=reshape(ijk_mat',1,Ncst*3);
     localF_mat=reshape(localF_mat',1,Ncst*9);
 

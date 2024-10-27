@@ -4,8 +4,8 @@ function [Tspr]=Solve_Global_Force(obj,node,U,M)
     NodeNum=A(1);    
     Tspr=zeros(3*NodeNum,1);
 
-    nodalCoordinates=node.coordinates_Mat;
-    sprIJKL=obj.rotSprIJKL_Mat;
+    nodalCoordinates=node.coordinates_mat;
+    sprIJKL=obj.node_ijkl_mat;
 
     spr_i=sprIJKL(:,1);
     spr_j=sprIJKL(:,2);

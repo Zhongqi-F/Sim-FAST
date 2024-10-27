@@ -1,7 +1,7 @@
 function [Kcst]=Solve_Global_Stiff(obj,U,dedx,d2edx2,cst_strain_mat,trans_mat)
 
     % Load values needed for calculation
-    cst_ijk=obj.cst_ijk_mat;
+    cst_ijk=obj.node_ijk_mat;
 
     % Find the number of CST elements
     Ncst=size(cst_ijk);

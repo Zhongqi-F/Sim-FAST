@@ -33,16 +33,16 @@ function Uhis=Solve(obj)
     Uhis=zeros(step+1,nodeNum,3);
     VHis=Uhis;
     
-    V0=zeros(size(assembly.node.currentU_Mat));
+    V0=zeros(size(assembly.node.current_U_mat));
     
-    Uhis(1,:,:)=assembly.node.currentU_Mat;
+    Uhis(1,:,:)=assembly.node.current_U_mat;
     VHis(1,:,:)=V0;
     
     % The static load that were previouslly applied
     currentAppliedForce=zeros(3*nodeNum,1);    
     for i=1:nodeNum
         currentAppliedForce(3*(i-1)+1:3*i) =...
-            assembly.node.currentExtForce_Mat(i,:);
+            assembly.node.current_ext_force_mat(i,:);
     end  
    
     % Find the mass matrix of the system
@@ -51,19 +51,19 @@ function Uhis=Solve(obj)
     % Implement the explicit solver
     for i=1:step
 
-        assembly.rotSpr.theta_StressFree_Vec=rotSprTarget(i,:)';
-        [T,K]=assembly.SolveFK(squeeze(Uhis(i,:,:)));
+        assembly.rotSpr.theta_stress_free_vec=rotSprTarget(i,:)';
+        [T,K]=assembly.Solve_FK(squeeze(Uhis(i,:,:)));
 
-        [K,T]=ModKforSupp(K,supp,T);
+        [K,T]=Mod_K_For_Supp(K,supp,T);
 
-        [K,Fexti]=ModKforSupp(K,supp,...
+        [K,Fexti]=Mod_K_For_Supp(K,supp,...
             reshape(squeeze(Fext(i,:,:))',[3*nodeNum,1]));
-        [K,Fexti1]=ModKforSupp(K,supp,...
+        [K,Fexti1]=Mod_K_For_Supp(K,supp,...
             reshape(squeeze(Fext(i+1,:,:))',[3*nodeNum,1]));
         
-        [K,Vhisi]=ModKforSupp(K,supp,...
+        [K,Vhisi]=Mod_K_For_Supp(K,supp,...
             reshape(squeeze(VHis(i,:,:))',[3*nodeNum,1]));
-        [K,Uhisi]=ModKforSupp(K,supp,...
+        [K,Uhisi]=Mod_K_For_Supp(K,supp,...
             reshape(squeeze(Uhis(i,:,:))',[3*nodeNum,1]));
 
         K=sparse(K);

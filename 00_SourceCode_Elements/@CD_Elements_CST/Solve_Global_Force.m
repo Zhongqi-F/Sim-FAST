@@ -2,7 +2,7 @@ function [Tcst]=Solve_Global_Force(obj,node,U)
 
     % retrieve information about the element
     nodalCoordinates=node.coordinates_mat;
-    cstIJK=obj.cst_ijk_mat;
+    cstIJK=obj.node_ijk_mat;
 
     E_vec=obj.E_vec;
     t_vec=obj.t_vec;

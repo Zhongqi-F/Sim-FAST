@@ -6,7 +6,7 @@ function [dedx,d2edx2] = Solve_Derivatives(obj,...
     % dedx is of size {Ncst,3,9}. 
     % d2edx2 is of size {Ncst,3,9,9}. 
     
-    ijk_mat=obj.cst_ijk_mat; 
+    ijk_mat=obj.node_ijk_mat; 
     Ncst=size(ijk_mat);
     Ncst=Ncst(1);
 

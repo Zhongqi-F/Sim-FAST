@@ -8,7 +8,7 @@ classdef Vec_Elements_CST < handle
 
     properties
         % Connection information of rotational spring elements (Ncst*3)
-        cst_ijk_mat
+        node_ijk_mat
 
         % Thickness of each element (Ncst*1)
         t_vec 

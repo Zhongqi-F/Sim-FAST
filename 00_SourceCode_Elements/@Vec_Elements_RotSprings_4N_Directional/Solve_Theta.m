@@ -1,6 +1,6 @@
 function [theta]=Solve_Theta(obj,node,U)
 
-    nodalCoordinate=node.coordinates_Mat;
+    nodalCoordinate=node.coordinates_mat;
     sprIJKL=obj.node_ijkl_mat;
 
     spr_i=sprIJKL(:,1);

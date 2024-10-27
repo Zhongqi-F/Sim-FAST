@@ -4,8 +4,8 @@ function [Kspr]=Solve_Global_Stiff(obj,node,U,Mspr,Cspr)
     NodeNum=A(1);
     Kspr=zeros(3*NodeNum,3*NodeNum);
 
-    sprIJKL=obj.rotSprIJKL_Mat;
-    nodalCoordinates=node.coordinates_Mat;
+    sprIJKL=obj.node_ijkl_mat;
+    nodalCoordinates=node.coordinates_mat;
 
 
     % This is the vectorized version of the code
