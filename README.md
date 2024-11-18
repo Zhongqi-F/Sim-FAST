@@ -29,6 +29,19 @@ I will not claim that the code package is a replacement to commercial
 softwares (which is not the case), but it offers very different capabilities 
 that I myself does not find in commercial softwares. 
 
+
+## Youtube Tutorial Videos
+
+Please find the list of tutorial videos here:
+
+https://www.youtube.com/playlist?list=PLLR0SJ1WSb92-_e7nog4T6sGMNHzgWRNx
+
+The first vdieo from this series can be found here:
+
+[![](https://img.youtube.com/vi/CvfD8SYBZcY/0.jpg)](https://www.youtube.com/watch?v=CvfD8SYBZcY&list=PLLR0SJ1WSb92-_e7nog4T6sGMNHzgWRNx)
+
+I tried to make my group's internal training more systematic by creating these videos. I believe that this will be a great first step for my own students to get started with coding and simulation of active and adaptive structures. Hopefully, these tutorial videos will eventually evolve into a grad level class on the topics of active structures. Since I have already created these, why not make them open-access right ;)
+
  
 
 ## A Living Textbook 
@@ -56,17 +69,6 @@ advanced elements are derived analytically. Advanced elements are all vectorized
 computation speed and they begin with "Vec_Elements". Basic elements begin with "CD_Elements"
 representing that their derivation is based on central difference. 
 
-## Youtube Tutorial Videos
-
-Please find the list of tutorial videos here:
-
-https://www.youtube.com/playlist?list=PLLR0SJ1WSb92-_e7nog4T6sGMNHzgWRNx
-
-The first vdieo from this series can be found here:
-
-[![](https://img.youtube.com/vi/CvfD8SYBZcY/0.jpg)](https://www.youtube.com/watch?v=CvfD8SYBZcY&list=PLLR0SJ1WSb92-_e7nog4T6sGMNHzgWRNx)
-
-I tried to make my group's internal training more systematic by creating these videos. I believe that this will be a great first step for my own students to get started with coding and simulation of active and adaptive structures. Hopefully, these tutorial videos will eventually evolve into a grad level class on the topics of active structures. Since I have already created these, why not make them open-access right ;)
 
 
 
