@@ -5,7 +5,7 @@ origami, trusses, mechanisms, metamaterials, and many others. **Please ensure ru
 
 The following Intro Figure shows some working examples.
 
-![alt text](https://github.com/zzhuyii/Sim-FAST/blob/main/Figures/Intro.png)
+![alt text](https://github.com/zzhuyii/Sim-FAST/blob/main/03_Figures_On_Git_Webpage/Intro.png)
 
 More specifically, the model in this package represents an active structure 
 using nodal representations without rotational degrees-of-freedom. 
@@ -54,7 +54,7 @@ become their starting point to learn simulation for active structures.
 However, I believe such an effort is worth made open-access, which is 
 why I uploaded this package here.
 
-![alt text](https://github.com/zzhuyii/Sim-FAST/blob/main/Figures/Feature.png)
+![alt text](https://github.com/zzhuyii/Sim-FAST/blob/main/03_Figures_On_Git_Webpage/Feature.png)
 
 **Please ensure running in MATLAB 2024a or newer version!**
 
