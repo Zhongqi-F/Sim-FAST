@@ -1,5 +1,4 @@
-
-classdef Plot_2D_Mechanism < handle
+classdef Plot_Origami < handle
 
     properties
         % Assembly of structure
@@ -18,13 +17,13 @@ classdef Plot_2D_Mechanism < handle
         y0=0;
 
         % hold time for gif
-        holdTime=0.01;
+        holdTime=0.01;        
 
-        % the name for animation file
-        fileName='animation.gif'        
+        % Animation file name
+        fileName='Animation.gif'
 
-        % number of active truss (will be plotted with different color)
-        activeTrussNum
+        % panel information for plotting
+        panelConnection={}
 
     end
 
@@ -35,17 +34,11 @@ classdef Plot_2D_Mechanism < handle
         % Plot the shape of the system with bar number
         Plot_Shape_Bar_Number(obj);
 
-        % Plot the shape of the system with spring number
-        Plot_Shape_Spr_Number(obj);
-
         % Plot the deformation animation
         Plot_Deformed_His(obj,Uhis)
 
         % Plot the deformed shape of the system
-        Plot_Deformed_Shape(obj,Udeformed,Uoriginal)
-
-        % Plot the force of the bar
-        Plot_Bar_Force(obj,F)
+        Plot_Deformed_Shape(obj,U)
 
     end
 end

@@ -1,5 +1,4 @@
-
-classdef Assembly_Truss < handle
+classdef Assembly_Origami < handle
 
     properties
         % Nodes
@@ -8,8 +7,8 @@ classdef Assembly_Truss < handle
         % Bars
         bar
 
-        % Active Bars
-        actBar
+        % Rotational Springs
+        rotSpr
 
     end
 

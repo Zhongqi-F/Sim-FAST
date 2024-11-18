@@ -134,7 +134,7 @@ assembly.node=node;
 assembly.bar=bar;
 assembly.rotSpr=rotSpr;
 
-assembly.InitializeAssembly()
+assembly.Initialize_Assembly()
 
 %% Plot for investigation
 plots=Plot_Origami();
@@ -207,7 +207,7 @@ forceHis=zeros(dc.increStep,1);
 UrefHis=zeros(dc.increStep,1);
 
 for i=1:dc.increStep
-    [F,K]=assembly.SolveFK(squeeze(Uhis(i,:,:)));
+    [F,K]=assembly.Solve_FK(squeeze(Uhis(i,:,:)));
     UrefHis(i)=Uhis(i,dc.selectedRefDisp(1),dc.selectedRefDisp(2));
     forceHis(i)=F(dc.selectedRefDisp(2)+(dc.selectedRefDisp(1))*3);
 end

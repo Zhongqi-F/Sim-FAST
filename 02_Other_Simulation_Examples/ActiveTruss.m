@@ -26,7 +26,8 @@ node.coordinates_mat=[0 0 t;
                       3.5 0.5 0; ];
 
 % Define the bars
-bar=CD_Elements_Bars;
+actBar=CD_Elements_Bars;
+bar=Vec_Elements_Bars;
 
 % The bars for the square base
 bar.node_ij_mat=[1,2;
@@ -42,15 +43,6 @@ bar.node_ij_mat=[1,2;
                     3,8;
                     4,9;
                     5,10];
-
-% Top and bottom row
-bar.node_ij_mat=[bar.node_ij_mat;                    
-                    11,12;
-                    12,13;
-                    13,14;
-                    15,16;
-                    16,17;
-                    17,18;];
 
 % Diagonal bars
 for i=[1,2,6,7]
@@ -72,18 +64,28 @@ for i=[4,5,9,10]
     bar.node_ij_mat=[bar.node_ij_mat;14,i];
     bar.node_ij_mat=[bar.node_ij_mat;18,i];
 end
+
+% Top and bottom row
+actBar.node_ij_mat=[11,12;
+                    12,13;
+                    13,14;
+                    15,16;
+                    16,17;
+                    17,18;];
     
 %% Initialize area and other properties
-bar.A_vec=ones(51,1);
-bar.E_vec=ones(51,1);
+bar.A_vec=ones(45,1);
+bar.E_vec=ones(45,1);
 
-bar.Initialize(node);
+actBar.A_vec=ones(6,1);
+actBar.E_vec=ones(6,1);
 
 % Create Assembly
 assembly=Assembly_Truss;
 assembly.bar=bar;
+assembly.actBar=actBar;
 assembly.node=node;
-assembly.InitializeAssembly();
+assembly.Initialize_Assembly();
 
 
 plots=Plot_Truss();
@@ -91,8 +93,8 @@ plots.displayRangeRatio=0.1;
 plots.displayRange=5;
 plots.assembly=assembly;
 
-plots.Plot_Shape_NodeNumber()
-plots.Plot_Shape_BarNumber()
+plots.Plot_Shape_Node_Number()
+plots.Plot_Shape_Bar_Number()
 
 %% Set up the loading solver
 action=Solver_NR_TrussAction;
@@ -102,26 +104,25 @@ action.supp=[1,1,1,1;
          15,1,1,1;];
 
 % Set up the stress-free length of the bars
-action.targetL0=bar.L0_vec;
+action.targetL0=actBar.L0_vec;
 dL0=0.2;
 
 % Set up how the stress-free lengths of bars change
-action.targetL0(14)=action.targetL0(14)-dL0;
-action.targetL0(15)=action.targetL0(15)-dL0;
-action.targetL0(16)=action.targetL0(16)-dL0;
+action.targetL0(1)=action.targetL0(1)-dL0;
+action.targetL0(2)=action.targetL0(2)-dL0;
+action.targetL0(3)=action.targetL0(3)-dL0;
 
-action.targetL0(17)=action.targetL0(17)+dL0;
-action.targetL0(18)=action.targetL0(18)+dL0;
-action.targetL0(19)=action.targetL0(19)+dL0;
+action.targetL0(4)=action.targetL0(4)+dL0;
+action.targetL0(5)=action.targetL0(5)+dL0;
+action.targetL0(6)=action.targetL0(6)+dL0;
 
 
 
 Uhis=action.Solve();
 
 plots.fileName='ActiveTruss.gif';
-plots.activeTrussNum=[14,15,16,17,18,19];
-plots.Plot_DeformedHis(Uhis);
-plots.Plot_DeformedShape(squeeze(Uhis(end,:,:)));
+plots.Plot_Deformed_His(Uhis);
+plots.Plot_Deformed_Shape(squeeze(Uhis(end,:,:)));
 
 
 

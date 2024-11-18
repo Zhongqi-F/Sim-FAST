@@ -1,6 +1,6 @@
 %% plot the deformation history of the simulated results.
 
-function Plot_Deformed_Shape(obj,Udeformed,Uoriginal)
+function Plot_Deformed_Shape(obj,U)
 
 View1=obj.viewAngle1;
 View2=obj.viewAngle2;
@@ -8,7 +8,7 @@ Vsize=obj.displayRange;
 Vratio=obj.displayRangeRatio;
 
 assembly=obj.assembly;
-undeformedNode=assembly.node.coordinates_mat+Uoriginal;
+undeformedNode=assembly.node.coordinates_mat;
 
 figure;
 
@@ -29,7 +29,6 @@ barConnect=assembly.bar.node_ij_mat;
 barNum=size(barConnect);
 barNum=barNum(1);
 
-
 for j=1:barNum
     node1=undeformedNode(barConnect(j,1),:);
     node2=undeformedNode(barConnect(j,2),:);
@@ -38,21 +37,31 @@ for j=1:barNum
          [node1(3),node2(3)],'Color',[.7 .7 .7]);
 end
 
-deformNode=assembly.node.coordinates_mat+Udeformed;
+deformNode=undeformedNode+U;
 
-for j=1:barNum    
-        node1=deformNode(barConnect(j,1),:);
-        node2=deformNode(barConnect(j,2),:);
-        line([node1(1),node2(1)],...
-             [node1(2),node2(2)],...
-             [node1(3),node2(3)],'Color','k');
+for j=1:barNum
+    node1=deformNode(barConnect(j,1),:);
+    node2=deformNode(barConnect(j,2),:);
+    line([node1(1),node2(1)],...
+         [node1(2),node2(2)],...
+         [node1(3),node2(3)],'Color','k');
 end
 
-for j=obj.activeTrussNum
-        node1=deformNode(barConnect(j,1),:);
-        node2=deformNode(barConnect(j,2),:);
-        line([node1(1),node2(1)],...
-             [node1(2),node2(2)],...
-             [node1(3),node2(3)],'Color','b','Linewidth',3);
+panelNum=size(obj.panelConnection);
+panelNum=panelNum(2);
+
+for i=1:panelNum
+    nodeNumVec=obj.panelConnection{i};
+
+    f=[];
+    v=[];
+    for j=1:length(nodeNumVec)
+        f=[f,j];
+        v=[v;deformNode(nodeNumVec(j),:)];
+    end
+
+    patch('Faces',f,'Vertices',v,'FaceColor','yellow')
+
 end
 
+end
