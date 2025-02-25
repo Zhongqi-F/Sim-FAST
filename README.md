@@ -83,13 +83,11 @@ The triangle-to-triangle penetration prevention element uses the distance calcul
 The code and method from Shellshear and Ytterlid (2014) is published under the MIT liscence. 
 Please ensure their work is properly cited if you are using the triangle-to-triangle penetration prevention element. 
 
-Resch, R., Cristiansen, H.N., 1970. Kinematic folded plate system, in: Proceedings of IASS Symposium on Folded
+* Resch, R., Cristiansen, H.N., 1970. Kinematic folded plate system, in: Proceedings of IASS Symposium on Folded
 Plates and Prismatic Structures, IASS, Vienna, Austria.
-
-Liu, K., Paulino, G., 2017. Nonlinear mechanics of non-rigid origami: an efficient computational approach. Proceed-
-ings of Royal Society A 473. doi:10.1098/rspa.2017.0348.
-
-Shellshear, E., & Ytterlid, R. 2014. Fast Distance Queries for Triangles, Lines, and Points using SSE Instructions. Journal of Computer Graphics Techniques (JCGT), 3(4), 86–110. Retrieved from http://jcgt.org/published/0003/04/05/
+* Liu, K., Paulino, G., 2017. Nonlinear mechanics of non-rigid origami: an efficient computational approach. Proceed-
+ings of Royal Society A 473. 
+* Shellshear, E., & Ytterlid, R. 2014. Fast Distance Queries for Triangles, Lines, and Points using SSE Instructions. Journal of Computer Graphics Techniques (JCGT), 3(4), 86–110. 
 
 
 ## Release Note:
