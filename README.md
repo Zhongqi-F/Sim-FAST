@@ -70,6 +70,26 @@ computation speed and they begin with "Vec_Elements". Basic elements begin with 
 representing that their derivation is based on central difference. 
 
 
+## Reference and Acknowledgement:
+
+I would like to acknowledge discussion and support from multiple agencies and individuals who have made this code package possible. 
+I want to acknowledge helpful discussion with Dr. M. Schenk on the overall code structure and textbook idea. 
+I want to acknowledge the inspiration from Dr. R. Resch and Dr. H. N. Cristiansen for their pioneering work on the simulation of origami structures (Resch and Cristiansen (1970)).
+I want to acknowledge the inspiration from Dr. K. Liu and Dr. G. H. Paulino for their work on using bar-and-hinge model to simulate origami structures (Liu and Paulino (2017)).
+I want to acknowledge the support of my Phd advisor Dr. E. T. Filipov for supporting the development of my previous origami simulation package. 
+
+
+The triangle-to-triangle penetration prevention element uses the distance calculation method and code developed by Shellshear and Ytterlid (2014). 
+The code and method from Shellshear and Ytterlid (2014) is published under the MIT liscence. 
+Please ensure their work is properly cited if you are using the triangle-to-triangle penetration prevention element. 
+
+Resch, R., Cristiansen, H.N., 1970. Kinematic folded plate system, in: Proceedings of IASS Symposium on Folded
+Plates and Prismatic Structures, IASS, Vienna, Austria.
+
+Liu, K., Paulino, G., 2017. Nonlinear mechanics of non-rigid origami: an efficient computational approach. Proceed-
+ings of Royal Society A 473. doi:10.1098/rspa.2017.0348.
+
+Shellshear, E., & Ytterlid, R. 2014. Fast Distance Queries for Triangles, Lines, and Points using SSE Instructions. Journal of Computer Graphics Techniques (JCGT), 3(4), 86–110. Retrieved from http://jcgt.org/published/0003/04/05/
 
 
 ## Release Note:
