@@ -27,7 +27,7 @@ function [Uhis]=Solve(obj)
     count=1;
 
     % find the zero strain angle, before and after the analysis
-    sprZeroStrain_before=assembly.rotSpr.theta_current_vec;
+    sprZeroStrain_before=assembly.rot_spr_4N.theta_current_vec;
     sprZeroStrain_after=obj.targetRot;
     
         
@@ -42,7 +42,7 @@ function [Uhis]=Solve(obj)
              
         while and(step<iterMax,R>tol)
             
-            assembly.rotSpr.theta_stress_free_vec=...
+            assembly.rot_spr_4N.theta_stress_free_vec=...
                 sprZeroStrain_current;
             [T,K]=assembly.Solve_FK(U);
 

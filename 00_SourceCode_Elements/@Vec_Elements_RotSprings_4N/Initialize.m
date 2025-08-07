@@ -27,10 +27,22 @@ function Initialize(obj,node)
 
         norm1=cross(v1,v2);
 
-        if norm1(3)>0
+        if norm1(3)~=0
+            if norm1(3)<0
+                obj.node_ijkl_mat(i,2)=n3;
+                obj.node_ijkl_mat(i,3)=n2;
+            end
+
+        elseif norm1(2)~=0
+            if norm1(2)<0
+                obj.node_ijkl_mat(i,2)=n3;
+                obj.node_ijkl_mat(i,3)=n2;
+            end
         else
-            obj.node_ijkl_mat(i,2)=n3;
-            obj.node_ijkl_mat(i,3)=n2;
+            if norm1(1)<0
+                obj.node_ijkl_mat(i,2)=n3;
+                obj.node_ijkl_mat(i,3)=n2;
+            end
         end
 
     end

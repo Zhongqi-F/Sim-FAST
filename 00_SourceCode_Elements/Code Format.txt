@@ -23,4 +23,9 @@ This is a summary of the code format:
 
 - Element Type
   CD_Element: Education oriented, derived with central difference
+              for calculating gradient and hessian
+  Std_Element: Standard element formulation using for-loop, 
+               derived using analytical solution for calculating
+               gradient and hessian
   Vec_Element: Faster implementation with vectorization
+  

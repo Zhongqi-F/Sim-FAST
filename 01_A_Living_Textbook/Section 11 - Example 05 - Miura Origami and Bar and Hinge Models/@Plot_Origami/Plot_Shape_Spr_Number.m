@@ -58,7 +58,7 @@ node0=assembly.node.coordinates_mat;
 A=size(assembly.node.coordinates_mat);
 N=A(1);
 
-sprIJKL=obj.assembly.rotSpr.node_ijkl_mat;
+sprIJKL=obj.assembly.rot_spr_4N.node_ijkl_mat;
 sprNum=size(sprIJKL);
 sprNum=sprNum(1);
 

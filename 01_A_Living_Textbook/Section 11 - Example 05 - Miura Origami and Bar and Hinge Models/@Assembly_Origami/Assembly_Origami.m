@@ -8,7 +8,7 @@ classdef Assembly_Origami < handle
         bar
 
         % Rotational Springs
-        rotSpr
+        rot_spr_4N
 
     end
 

@@ -1,13 +1,13 @@
 function Initialize(obj,node)
 
-    numCST=size(obj.cst_ijk_mat);
+    numCST=size(obj.node_ijk_mat);
     numCST=numCST(1);
 
     for i=1:numCST
 
-        n1=obj.cst_ijk_mat(i,1);
-        n2=obj.cst_ijk_mat(i,2);
-        n3=obj.cst_ijk_mat(i,3);
+        n1=obj.node_ijk_mat(i,1);
+        n2=obj.node_ijk_mat(i,2);
+        n3=obj.node_ijk_mat(i,3);
 
         nodeIndex=[n1,n2,n3];
 
@@ -30,9 +30,9 @@ function Initialize(obj,node)
         alphaVec=[alpha1,alpha2,alpha3];
         [alphaVec,index]=sort(alphaVec);
 
-        obj.cst_ijk_mat(i,1)=nodeIndex(index(3));
-        obj.cst_ijk_mat(i,2)=nodeIndex(index(2));
-        obj.cst_ijk_mat(i,3)=nodeIndex(index(1));
+        obj.node_ijk_mat(i,1)=nodeIndex(index(3));
+        obj.node_ijk_mat(i,2)=nodeIndex(index(2));
+        obj.node_ijk_mat(i,3)=nodeIndex(index(1));
 
     end
 end
