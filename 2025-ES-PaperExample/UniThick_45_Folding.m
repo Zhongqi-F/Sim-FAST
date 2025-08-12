@@ -1,0 +1,292 @@
+clear all;
+clc;
+close all;
+
+tic
+
+%% Define the geometry and material property of thick origami
+L=50*10^(-3);
+t=10*10^(-3);
+gap=0*10^(-3);
+faceThickness=1*10^(-3);
+
+% Stiffness parameters of the structure
+E=2*10^9; % Young's modulus
+v=0.3; % Poisson's Ratio
+
+sprStiff=0.1;
+zlsprStiff=1000000;
+
+% Initialize Elements
+node=Elements_Nodes;
+rot_spr_4N=Vec_Elements_RotSprings_4N_Directional;
+cst=Vec_Elements_CST;
+zlspr=Vec_Elements_Zero_L_Spring;
+
+
+
+%% Define the nodal coordinates for thick origami
+for j=1:3
+    for i=1:5
+        if mod(i,2)==1
+            node.coordinates_mat(1+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+gap/2,L*(j-1)+gap/2,0];
+            node.coordinates_mat(2+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+L-gap/2/tan(pi/8),L*(j-1)+gap/2,0];
+            node.coordinates_mat(3+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+gap/2,L*(j-1)+L-gap/2/tan(pi/8),0];
+            
+            node.coordinates_mat(4+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+gap/2,L*(j-1)+gap/2,t];
+            node.coordinates_mat(5+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+L-gap/2/tan(pi/8),L*(j-1)+gap/2,t];
+            node.coordinates_mat(6+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+gap/2,L*(j-1)+L-gap/2/tan(pi/8),t];
+
+
+            node.coordinates_mat(7+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+gap/2/tan(pi/8),L*(j-1)+L-gap/2,0];
+            node.coordinates_mat(8+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+L-gap/2,L*(j-1)+gap/2/tan(pi/8),0];
+            node.coordinates_mat(9+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+L-gap/2,L*(j-1)+L-gap/2,0];
+            
+            node.coordinates_mat(10+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+gap/2/tan(pi/8),L*(j-1)+L-gap/2,t];
+            node.coordinates_mat(11+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+L-gap/2,L*(j-1)+gap/2/tan(pi/8),t];
+            node.coordinates_mat(12+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+L-gap/2,L*(j-1)+L-gap/2,t];
+        else
+
+            node.coordinates_mat(1+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+gap/2,L*(j-1)+L-gap/2,0];
+            node.coordinates_mat(2+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+L-gap/2/tan(pi/8),L*(j-1)+L-gap/2,0];
+            node.coordinates_mat(3+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+gap/2,L*(j-1)+gap/2/tan(pi/8),0];
+            
+            node.coordinates_mat(4+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+gap/2,L*(j-1)+L-gap/2,t];
+            node.coordinates_mat(5+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+L-gap/2/tan(pi/8),L*(j-1)+L-gap/2,t];
+            node.coordinates_mat(6+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+gap/2,L*(j-1)+gap/2/tan(pi/8),t];
+
+            
+            node.coordinates_mat(7+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+L-gap/2,L*(j-1)+gap/2,0];
+            node.coordinates_mat(8+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+L-gap/2,L*(j-1)+L-gap/2/tan(pi/8),0];
+            node.coordinates_mat(9+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+gap/2/tan(pi/8),L*(j-1)+gap/2,0];
+            
+            node.coordinates_mat(10+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+L-gap/2,L*(j-1)+gap/2,t];
+            node.coordinates_mat(11+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+L-gap/2,L*(j-1)+L-gap/2/tan(pi/8),t];
+            node.coordinates_mat(12+12*(i-1)+60*(j-1),:)=...
+                [L*(i-1)+gap/2/tan(pi/8),L*(j-1)+gap/2,t];
+
+        end    
+    end
+end
+node.coordinates_mat=node.coordinates_mat(7:174,:);
+
+
+%% Initialize assembly
+assembly=Assembly_ThickOrigami();
+assembly.node=node;
+assembly.rot_spr_4N=rot_spr_4N;
+assembly.cst=cst;
+assembly.zlspr=zlspr;
+
+
+
+%% Set up the panels
+for i=1:28
+    assembly.Add_Triangle_Panel(6*(i-1)+1,6*(i-1)+2,6*(i-1)+3,...
+        6*(i-1)+4,6*(i-1)+5,6*(i-1)+6,E,faceThickness,v);
+end
+
+
+
+%% Define the connectors
+zlspr.node_ij_mat=[zlspr.node_ij_mat;5 12; 6 10];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;8 14; 9 15];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;16 22; 17 24];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;20 26; 21 25];
+
+zlspr.node_ij_mat=[zlspr.node_ij_mat;29 36; 30 34];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;32 38; 33 39];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;40 46; 41 48];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;44 50; 45 49];
+
+zlspr.node_ij_mat=[zlspr.node_ij_mat;59 65; 60 64];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;62 69; 63 67];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;71 77; 72 78];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;73 79; 74 81];
+
+zlspr.node_ij_mat=[zlspr.node_ij_mat;83 89; 84 88];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;86 93; 87 91];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;95 101; 96 102];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;97 103; 98 105];
+
+zlspr.node_ij_mat=[zlspr.node_ij_mat;107 113; 108 112];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;116 122; 117 121];
+
+zlspr.node_ij_mat=[zlspr.node_ij_mat;125 132; 126 130];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;128 134; 129 135];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;136 142; 137 144];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;140 146; 141 145];
+
+zlspr.node_ij_mat=[zlspr.node_ij_mat;149 156; 150 154];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;152 158; 153 159];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;160 166; 161 168];
+
+
+
+%% Connect the big panel
+zlspr.node_ij_mat=[zlspr.node_ij_mat;1 55; 3 56; 4 58; 6 59];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;25 79; 27 80; 28 82; 30 83];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;49 103; 51 104; 52 106; 54 107];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;61 115; 63 116; 64 118; 66 119];
+
+zlspr.node_ij_mat=[zlspr.node_ij_mat;88 142; 90 143; 85 139; 87 140];
+zlspr.node_ij_mat=[zlspr.node_ij_mat;112 166; 114 167; 109 163; 111 164];
+
+zlspr.k_vec=zlsprStiff*ones(74,1);
+
+%% Rotational Spring
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 4 12 10 11];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 61 69 67 68];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 124 132 130 131];
+
+
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 18 22 24 23];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 75 79 81 80];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 138 142 144 143];
+
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 28 34 36 35];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 85 91 93 92];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 148 154 156 155];
+
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 42 46 48 47];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 99 105 103 104];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 162 168 166 167];
+
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 58 64 65 66];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 70 77 78 76];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 82 88 89 90];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 94 101 102 100];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 106 112 113 114];
+
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 115 121 122 123];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 127 134 135 133];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 139 145 146 147];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 151 158 159 157];
+
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 7 14 15 13];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 19 25 26 27];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 31 38 39 37];
+rot_spr_4N.node_ijkl_mat=[rot_spr_4N.node_ijkl_mat; 43 49 50 51];
+
+rot_spr_4N.rot_spr_K_vec=sprStiff*ones(25,1);
+
+rot_spr_4N.mv_factor_vec=100000*ones(25,1);
+rot_spr_4N.mv_vec=ones(25,1);
+rot_spr_4N.mv_vec([2 5 8 11 18 19 20 21 22 23 24 25])=0;
+
+
+%% Plot for investigation
+assembly.Initialize_Assembly();
+
+plots=Plot_ThickOrigami();
+plots.displayRange=0.3;
+plots.displayRangeRatio=0.5;
+plots.viewAngle1=-40;
+plots.assembly=assembly;
+
+plots.Plot_Shape_NodeNumber();
+plots.Plot_Shape_SprNumber();
+plots.Plot_Shape_CSTNumber();
+plots.Plot_Shape_ZLsprNumber();
+
+
+
+%% Newton Raphson Loading for the Folding Motion
+sf=Solver_NR_Folding_4N;
+sf.assembly=assembly;
+sf.supp=[1,1,1,1;
+         2,1,1,1;
+         3,1,1,1;];
+
+sf.targetRot=rot_spr_4N.theta_current_vec;
+originalRot=rot_spr_4N.theta_current_vec;
+
+totalStep=200;
+targetRate=0.9;
+
+foldUpIndex=[1 3 4 6 7 9 10 12 13 14 15 16 17];
+foldDownIndex=[2 5 8 11 18 19 20 21 22 23 24 25];
+
+Uhis=zeros(totalStep,168,3);
+rotHis=zeros(totalStep,25);
+
+for k=1:totalStep
+    
+    sf.targetRot(foldUpIndex)=originalRot(foldUpIndex)+k/totalStep*targetRate*pi; 
+    sf.targetRot(foldDownIndex)=originalRot(foldDownIndex)-k/totalStep*targetRate*pi; 
+    
+    if k<5
+        sf.increStep=5;
+    else
+        sf.increStep=2;
+    end
+
+    sf.tol=1*10^-7;
+    sf.iterMax=50;
+    
+    Utemp=sf.Solve();
+
+    Uhis(k,:,:)=Utemp(end,:,:);
+
+    rotHis(k,:)=rot_spr_4N.theta_current_vec';
+end
+
+toc
+
+%% Plot the folding animation and deformed shape
+% Plot the folding history and kinematics of the system
+plots.fileName='UniThick_45_Folding.gif';
+plots.Plot_DeformedShape(squeeze(Uhis(end,:,:)))
+plots.Plot_DeformedHis(Uhis(1:10:end,:,:))
+
+
+
+%% Fold angle history comparison
+% Compare simulated folding angle with theoretical folding angle
+
+% find the theoretical fold angle
+theoryFold=zeros(totalStep,2);
+for i=1:totalStep
+    theoryFold(i,1)=targetRate*i/totalStep*pi;
+    theoryFold(i,2)=2*(atan(tan(theoryFold(i,1)/2)/cos(pi/4)));
+end
+
+figure
+hold on
+
+% Plot the theoretical fold angle
+plot(pi+theoryFold(:,1),pi+theoryFold(:,2),Color=[0.5,0.5,0.5])
+plot(pi+theoryFold(:,1),pi-theoryFold(:,2),Color=[0.5,0.5,0.5])
+plot(pi+theoryFold(:,1),pi+theoryFold(:,1),Color=[0.5,0.5,0.5])
+plot(pi+theoryFold(:,1),pi-theoryFold(:,1),Color=[0.5,0.5,0.5])
+
+% Plot simulation fold angle
+for i=1:25
+    plot(rotHis(:,1),rotHis(:,i),':',LineWidth=2)
+end
+
+
+
