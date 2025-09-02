@@ -43,6 +43,8 @@ classdef CD_Elements_RotSprings_3N < handle
         % Calculate the gloabl stiffness matrix of the spring element
         [Krsf]=Solve_Global_Stiff(obj,node,U)
         
+        % Solve the theta angle for every fold
+        Solve_Global_Theta(obj,node,U)
 
         % This function is the main function we use to interact with the
         % solver. We use this function to compute the global forces and 
