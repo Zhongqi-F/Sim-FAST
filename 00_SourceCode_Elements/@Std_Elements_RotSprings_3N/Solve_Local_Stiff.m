@@ -61,6 +61,7 @@ function [Klocal]=Solve_Local_Stiff(obj,X,theta0,K)
     
     % theta results
     dthetadx=-1/sqrt(1-f)*dfdx;
+    
     dtheta2dx2=-1/2/((1-f)^1.5)*(dfdx*dfdx')-1/sqrt(1-f)*df2dx2;
 
     Klocal=K*(dthetadx*dthetadx')+K*(theta-theta0)*dtheta2dx2;

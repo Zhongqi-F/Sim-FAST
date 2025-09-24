@@ -286,8 +286,7 @@ nr.iterMax = 20;
 nr.tol = 10^-5;
 
 Uhis = nr.Solve();  
-plots.fileName = 'Scissor_Bridge_Load.gif';
-plots.Plot_Deformed_His(Uhis);
+
 
 U_end = squeeze(Uhis(end, :, :));  
 plots.Plot_Deformed_Shape(20*U_end);

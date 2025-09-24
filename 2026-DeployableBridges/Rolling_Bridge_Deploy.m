@@ -6,8 +6,7 @@ clc;
 % Define the nodes
 H=1100/1000; % Height of the truss
 HA=1100/1000; % Height of the active bar
-L1=1600/1000; % Length of 1st and last units' span
-L2=1600/1000; % Length of other units' span
+L=1600/1000; % Length of unit span
 l=530/1000;
 W=1600/1000;
 
@@ -23,11 +22,11 @@ activeBarE=80*10^9;
 N=8;
 
 I=1/12*0.01^4;
-kspr=3*barE*I/L2;
+kspr=3*barE*I/L;
 
 node=Elements_Nodes;
 bar=Vec_Elements_Bars;
-actBar=CD_Elements_Bars;
+actBar=Std_Elements_Bars;
 rot_spr_3N=CD_Elements_RotSprings_3N;
 cst=Vec_Elements_CST;
 
@@ -40,49 +39,36 @@ assembly.cst=cst;
 
 
 %% Define the nodal coordinates
-node.coordinates_mat=[];
-for i=1:N
-    if i==1
-    node.coordinates_mat=[node.coordinates_mat;
-        0       0,   0; % 1
-        0       W,   0; % 2
-        L1,     0,   0; % 3 
-        L1,     W,   0; % 4    
-        l,      0,   H; % 5
-        L1-l,   0,   H; % 6
-        l,      W,   H; % 7
-        L1-l,   W,   H; % 8
-        L1,     0,   HA; %active bar's node
-        L1,     W,   HA; %active bar's node
-        ];
-    elseif i==N
-    node.coordinates_mat=[node.coordinates_mat;
-        L1+((N-2)*L2),        0,   HA; %active bar's node
-        L1+((N-2)*L2),        W,   HA; %active bar's node
-        L1+((N-2)*L2+L1),     0,   0; 
-        L1+((N-2)*L2+L1),     W,   0;     
-        l+((N-2)*L2+L1),      0,   H; 
-        L1-l+((N-2)*L2+L1),   0,   H; 
-        l+((N-2)*L2+L1),      W,   H; 
-        L1-l+((N-2)*L2+L1),   W,   H; 
-        ];
+
+node.coordinates_mat=[
+    0     0,   0; 
+    0     W,   0;
+];
+
+for i=1:N  
+
+    if i<N
+        node.coordinates_mat=[node.coordinates_mat;
+            (i-1)*L+L,     0,   0; 
+            (i-1)*L+L,     W,   0;   
+            (i-1)*L+l,      0,   H; 
+            (i-1)*L+L-l,   0,   H; 
+            (i-1)*L+l,      W,   H; 
+            (i-1)*L+L-l,   W,   H; 
+            (i-1)*L+L,     0,   HA; 
+            (i-1)*L+L,     W,   HA; 
+            ];
+    else 
+        node.coordinates_mat=[node.coordinates_mat;
+            (N-1)*L+L,     0,   0; 
+            (N-1)*L+L,     W,   0;   
+            (N-1)*L+l,      0,   H; 
+            (N-1)*L+L-l,   0,   H; 
+            (N-1)*L+l,      W,   H; 
+            (N-1)*L+L-l,   W,   H; 
+            ];
     end
-    if i>=3 && i<=N-1
-    node.coordinates_mat=[node.coordinates_mat;
-        L2+L1+(i-3)*L2,      0,   HA; %active bar's node
-        L2+L1+(i-3)*L2,      W,   HA; %active bar's node
-    ];
-    end
-    if i>=2 && i<=N-1   
-    node.coordinates_mat=[node.coordinates_mat;
-        L2+L1+(i-2)*L2,      0,   0;
-        L2+L1+(i-2)*L2,      W,   0;    
-        l+L1+(i-2)*L2,       0,   H; 
-        (L2-l)+L1+(i-2)*L2,  0,   H; 
-        l+L1+(i-2)*L2,       W,   H; 
-        (L2-l)+L1+(i-2)*L2,  W,   H; 
-        ];
-    end
+
 end
 
 % Set up the plotting function for inspection
@@ -99,20 +85,15 @@ plots.Plot_Shape_Node_Number()
 %% Define how panels are designed
 for i=1:N
     if i==1
-    cst.node_ijk_mat=[cst.node_ijk_mat
-        1  2  3;
-        2  3  4;
-        ];
-    elseif i==N
-    cst.node_ijk_mat=[cst.node_ijk_mat
-        51  52  59;
-        52  59  60;
-        ];
-    else
-    cst.node_ijk_mat=[cst.node_ijk_mat
-        3+(i-2)*8  4+(i-2)*8   11+(i-2)*8;
-        4+(i-2)*8  11+(i-2)*8  12+(i-2)*8;
-        ];
+        cst.node_ijk_mat=[cst.node_ijk_mat
+            (i-1)*8+1  (i-1)*8+2  (i-1)*8+3;
+            (i-1)*8+2  (i-1)*8+3  (i-1)*8+4;
+            ];
+    else 
+        cst.node_ijk_mat=[cst.node_ijk_mat
+            (i-2)*8+3  (i-2)*8+4  (i-2)*8+11;
+            (i-2)*8+4  (i-2)*8+11  (i-2)*8+12;
+            ];
     end
 end
 
@@ -128,51 +109,60 @@ plots.Plot_Shape_CST_Number();
 % First we design the normal bar
 for i=1:N
     if i==1
-        bar.node_ij_mat=[bar.node_ij_mat;        
-            1, 2;
-            1, 3;
-            2, 4;
-            3, 4;
-            1, 5;
-            2, 7;
-            3, 6;
-            4, 8;
-            5, 6;
-            7, 8;
-            6, 9;
-            8, 10;
-            ];
+    bar.node_ij_mat=[
+            1 3;
+            3 6;
+            6 5;
+            5 1;
+            2 4;
+            4 8;
+            8 7;
+            7 2;
+
+            6 9;
+            8 10;
+
+            1 2;
+        ];
     elseif i==N
-        bar.node_ij_mat=[bar.node_ij_mat;
-            51, 59;
-            59, 60;
-            60, 52;
-            51, 61;
-            59, 62;
-            52, 63;
-            60, 64;
-            61, 62;
-            63, 64;
-            61, 57;
-            63, 58;
-            ];
+    bar.node_ij_mat=[bar.node_ij_mat;
+        (i-2)*8+3,   (i-2)*8+11;
+        (i-2)*8+11,   (i-2)*8+14;
+        (i-2)*8+13,   (i-2)*8+14;
+        (i-2)*8+13,   (i-2)*8+3;
+        
+        (i-2)*8+4,   (i-2)*8+12;
+        (i-2)*8+12,   (i-2)*8+16;
+        (i-2)*8+15,   (i-2)*8+16;
+        (i-2)*8+15,   (i-2)*8+4;
+
+        (i-2)*8+9,   (i-2)*8+13;
+        (i-2)*8+10,   (i-2)*8+15;   
+
+        (i-2)*8+3,   (i-2)*8+4;
+        (i-2)*8+11,   (i-2)*8+12;
+        ];
     else
-        bar.node_ij_mat=[bar.node_ij_mat;
-            3+(i-2)*8,   11+(i-2)*8;
-            11+(i-2)*8,  12+(i-2)*8;
-            12+(i-2)*8,  4+(i-2)*8;
-            3+(i-2)*8,   13+(i-2)*8;
-            13+(i-2)*8,  14+(i-2)*8;
-            14+(i-2)*8,  11+(i-2)*8;
-            4+(i-2)*8,   15+(i-2)*8;
-            15+(i-2)*8,  16+(i-2)*8;
-            16+(i-2)*8,  12+(i-2)*8;
-            9+(i-2)*8,   13+(i-2)*8;
-            10+(i-2)*8,  15+(i-2)*8;
-            14+(i-2)*8,  17+(i-2)*8;
-            16+(i-2)*8,  18+(i-2)*8;
-            ];
+    bar.node_ij_mat=[bar.node_ij_mat;
+        (i-2)*8+3,   (i-2)*8+11;
+        (i-2)*8+11,   (i-2)*8+14;
+        (i-2)*8+13,   (i-2)*8+14;
+        (i-2)*8+13,   (i-2)*8+3;
+        
+        (i-2)*8+4,   (i-2)*8+12;
+        (i-2)*8+12,   (i-2)*8+16;
+        (i-2)*8+15,   (i-2)*8+16;
+        (i-2)*8+15,   (i-2)*8+4;
+
+        (i-2)*8+9,   (i-2)*8+13;
+        (i-2)*8+14,   (i-2)*8+17;
+        (i-2)*8+10,   (i-2)*8+15;
+        (i-2)*8+16,   (i-2)*8+18;        
+
+        (i-2)*8+3,   (i-2)*8+4;
+        ];
     end
+
 end
 
 barNum=size(bar.node_ij_mat,1);
@@ -196,8 +186,8 @@ actBar.E_vec=activeBarE*ones(actBarNum,1);
 
 plots.Plot_Shape_ActBar_Number();
 
-% % Initialize the entire assembly 
-% assembly.Initialize_Assembly();
+% Initialize the entire assembly 
+assembly.Initialize_Assembly();
 
 
 %% Define how rotational springs are connected
@@ -239,82 +229,7 @@ plots.Plot_Shape_Spr_Number();
 assembly.Initialize_Assembly();
 
 
-%% Calculate Self-weight of the Bridge
-% Steel properties
-rho_steel = 7850;         % Density of steel (kg/m^3)
-g = 9.81;                 % Gravitational acceleration (m/s^2)
 
-% Bars (including normal bars and actuator bars)
-% Bar cross-section area
-A_bar = barA;             % m^2, should match bar.A_vec
-
-% 1. Total length of all normal bar elements
-L_bar_total = 0;
-barNodeMat = bar.node_ij_mat;
-coords = node.coordinates_mat;
-for i = 1:size(barNodeMat,1)
-    n1 = barNodeMat(i,1);
-    n2 = barNodeMat(i,2);
-    p1 = coords(n1,:);
-    p2 = coords(n2,:);
-    len = norm(p1 - p2);
-    L_bar_total = L_bar_total + len;
-end
-
-% 2. Total length of all actuator bar elements
-L_actbar_total = 0;
-if isfield(actBar,'node_ij_mat')
-    actBarNodeMat = actBar.node_ij_mat;
-    for i = 1:size(actBarNodeMat,1)
-        n1 = actBarNodeMat(i,1);
-        n2 = actBarNodeMat(i,2);
-        p1 = coords(n1,:);
-        p2 = coords(n2,:);
-        len = norm(p1 - p2);
-        L_actbar_total = L_actbar_total + len;
-    end
-end
-
-% 3. Total bar length (all bars)
-L_total = L_bar_total + L_actbar_total;
-
-% 4. Total weight of all bars (Newtons)
-W_bar = A_bar * L_total * rho_steel * g;
-
-% CST panels
-A_cst_total = 0;
-cstNodeMat = cst.node_ijk_mat;
-for i = 1:size(cstNodeMat,1)
-    n1 = cstNodeMat(i,1);
-    n2 = cstNodeMat(i,2);
-    n3 = cstNodeMat(i,3);
-    p1 = coords(n1,:);
-    p2 = coords(n2,:);
-    p3 = coords(n3,:);
-    % Heron's formula for triangle area
-    a = norm(p1 - p2);
-    b = norm(p2 - p3);
-    c = norm(p3 - p1);
-    s = (a + b + c) / 2;
-    area = sqrt(s * (s - a) * (s - b) * (s - c));
-    A_cst_total = A_cst_total + area;
-end
-
-t_cst = panelt;  % Thickness of CST panel (m), matches cst.t_vec
-% Weight of CST panels (Newtons)
-W_cst = A_cst_total * t_cst * rho_steel * g;
-
-% ----- Total self-weight -----
-W_total = W_bar + W_cst;
-
-% Output results
-fprintf('-----------------------------\n');
-fprintf('Total length of all bars: %.2f m\n', L_total);
-fprintf('Total area of all CST panels: %.2f m^2\n', A_cst_total);
-fprintf('Total bar weight: %.2f N\n', W_bar);
-fprintf('Total CST panel weight: %.2f N\n', W_cst);
-fprintf('Total self-weight of the bridge: %.2f N\n', W_total);
-fprintf('-----------------------------\n');
 
 
 %% Set up the self actuation solver

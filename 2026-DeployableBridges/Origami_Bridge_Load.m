@@ -249,8 +249,6 @@ Uhis=nr.Solve;
 toc
 plots.Plot_Deformed_Shape(squeeze(Uhis(end,:,:)))
 
-plots.fileName='Origami_Bridge_Load.gif';
-plots.Plot_Deformed_His(Uhis)
 
 % Failure load computation
 truss_strain=bar.Solve_Strain(node,squeeze(Uhis(end,:,:)));

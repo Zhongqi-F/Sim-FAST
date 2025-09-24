@@ -6,8 +6,7 @@ clc;
 % Define the nodes
 H=1; %1118/1000; % Height of the truss
 HA=1; %1055/1000; % Height of the active bar
-L1=1; %1315/1000; % Length of 1st and last units' span
-L2=1; %1615/1000; % Length of other units' span
+L=1; %1315/1000; % Length of 1st and last units' span
 l=0.3; %634/1000;
 W=1; %1600/1000;
 
@@ -24,10 +23,10 @@ activeBarE=80*10^9;
 % panelv=0.3; % Poisson's Ratio 0.3
 % panelt=100/1000; % Thicknes 10cm
 
-N=8;
+N=4;
 
 I=1/12*0.01^4;
-kspr=3*barE*I/L2*100000;
+kspr=3*barE*I/L*100000;
 
 node=Elements_Nodes;
 bar=Vec_Elements_Bars;
@@ -44,49 +43,35 @@ assembly.cst=cst;
 
 
 %% Define the nodal coordinates
-node.coordinates_mat=[];
-for i=1:N
-    if i==1
-    node.coordinates_mat=[node.coordinates_mat
-        0       0,   0; % 1
-        0       W,   0; % 2
-        L1,     0,   0; % 3 
-        L1,     W,   0; % 4    
-        l,      0,   H; % 5
-        L1-l,   0,   H; % 6
-        l,      W,   H; % 7
-        L1-l,   W,   H; % 8
-        L1,     0,   HA; %active bar's node
-        L1,     W,   HA; %active bar's node
-        ];
-    elseif i==N
-    node.coordinates_mat=[node.coordinates_mat
-        L1+((N-2)*L2),        0,   HA; %active bar's node
-        L1+((N-2)*L2),        W,   HA; %active bar's node
-        L1+((N-2)*L2+L1),     0,   0; 
-        L1+((N-2)*L2+L1),     W,   0;     
-        l+((N-2)*L2+L1),      0,   H; 
-        L1-l+((N-2)*L2+L1),   0,   H; 
-        l+((N-2)*L2+L1),      W,   H; 
-        L1-l+((N-2)*L2+L1),   W,   H; 
-        ];
+node.coordinates_mat=[
+    0     0,   0; 
+    0     W,   0;
+];
+
+for i=1:N  
+
+    if i<N
+        node.coordinates_mat=[node.coordinates_mat;
+            (i-1)*L+L,     0,   0; 
+            (i-1)*L+L,     W,   0;   
+            (i-1)*L+l,      0,   H; 
+            (i-1)*L+L-l,   0,   H; 
+            (i-1)*L+l,      W,   H; 
+            (i-1)*L+L-l,   W,   H; 
+            (i-1)*L+L,     0,   HA; 
+            (i-1)*L+L,     W,   HA; 
+            ];
+    else 
+        node.coordinates_mat=[node.coordinates_mat;
+            (N-1)*L+L,     0,   0; 
+            (N-1)*L+L,     W,   0;   
+            (N-1)*L+l,      0,   H; 
+            (N-1)*L+L-l,   0,   H; 
+            (N-1)*L+l,      W,   H; 
+            (N-1)*L+L-l,   W,   H; 
+            ];
     end
-    if i>=3 && i<=N-1
-    node.coordinates_mat=[node.coordinates_mat
-        L2+L1+(i-3)*L2,      0,   HA; %active bar's node
-        L2+L1+(i-3)*L2,      W,   HA; %active bar's node
-    ];
-    end
-    if i>=2 && i<=N-1   
-    node.coordinates_mat=[node.coordinates_mat
-        L2+L1+(i-2)*L2,      0,   0;
-        L2+L1+(i-2)*L2,      W,   0;    
-        l+L1+(i-2)*L2,       0,   H; 
-        (L2-l)+L1+(i-2)*L2,  0,   H; 
-        l+L1+(i-2)*L2,       W,   H; 
-        (L2-l)+L1+(i-2)*L2,  W,   H; 
-        ];
-    end
+
 end
 
 % Set up the plotting function for inspection
@@ -94,7 +79,7 @@ plots=Plot_Rolling_Bridge();
 plots.assembly=assembly;
 
 % We will plot for the Rolling Bridge
-plots.displayRange=[-0.5;N+0.5;-1;2;-1;2]; 
+plots.displayRange=[-2;14;-1;2;-1;10]; 
 
 % Plot the nodal coordinates for inspection
 plots.Plot_Shape_Node_Number()
@@ -103,22 +88,18 @@ plots.Plot_Shape_Node_Number()
 %% Define how panels are designed
 for i=1:N
     if i==1
-    cst.node_ijk_mat=[cst.node_ijk_mat
-        1  2  3;
-        2  3  4;
-        ];
-    elseif i==N
-    cst.node_ijk_mat=[cst.node_ijk_mat
-        51  52  59;
-        52  59  60;
-        ];
-    else
-    cst.node_ijk_mat=[cst.node_ijk_mat
-        3+(i-2)*8  4+(i-2)*8   11+(i-2)*8;
-        4+(i-2)*8  11+(i-2)*8  12+(i-2)*8;
-        ];
+        cst.node_ijk_mat=[cst.node_ijk_mat
+            (i-1)*8+1  (i-1)*8+2  (i-1)*8+3;
+            (i-1)*8+2  (i-1)*8+3  (i-1)*8+4;
+            ];
+    else 
+        cst.node_ijk_mat=[cst.node_ijk_mat
+            (i-2)*8+3  (i-2)*8+4  (i-2)*8+11;
+            (i-2)*8+4  (i-2)*8+11  (i-2)*8+12;
+            ];
     end
 end
+
 
 cstNum=size(cst.node_ijk_mat,1);
 cst.v_vec=panel_v*ones(cstNum,1);
@@ -132,54 +113,60 @@ plots.Plot_Shape_CST_Number();
 % First we design the normal bar
 for i=1:N
     if i==1
-        bar.node_ij_mat=[bar.node_ij_mat;        
-            1, 2;
-            1, 3;
-            2, 4;
-            3, 4;
-            1, 5;
-            2, 7;
-            3, 6;
-            4, 8;
-            5, 6;
-            7, 8;
-            6, 9;
-            8, 10;
-            2, 3;
-            ];
+    bar.node_ij_mat=[
+            1 3;
+            3 6;
+            6 5;
+            5 1;
+            2 4;
+            4 8;
+            8 7;
+            7 2;
+
+            6 9;
+            8 10;
+
+            1 2;
+        ];
     elseif i==N
-        bar.node_ij_mat=[bar.node_ij_mat;
-            51, 59;
-            59, 60;
-            60, 52;
-            51, 61;
-            59, 62;
-            52, 63;
-            60, 64;
-            61, 62;
-            63, 64;
-            61, 57;
-            64, 58;
-            52, 59;
-            ];
+    bar.node_ij_mat=[bar.node_ij_mat;
+        (i-2)*8+3,   (i-2)*8+11;
+        (i-2)*8+11,   (i-2)*8+14;
+        (i-2)*8+13,   (i-2)*8+14;
+        (i-2)*8+13,   (i-2)*8+3;
+        
+        (i-2)*8+4,   (i-2)*8+12;
+        (i-2)*8+12,   (i-2)*8+16;
+        (i-2)*8+15,   (i-2)*8+16;
+        (i-2)*8+15,   (i-2)*8+4;
+
+        (i-2)*8+9,   (i-2)*8+13;
+        (i-2)*8+10,   (i-2)*8+15;   
+
+        (i-2)*8+3,   (i-2)*8+4;
+        (i-2)*8+11,   (i-2)*8+12;
+        ];
     else
-        bar.node_ij_mat=[bar.node_ij_mat;
-            3+(i-2)*8,   11+(i-2)*8;
-            11+(i-2)*8,  12+(i-2)*8;
-            12+(i-2)*8,  4+(i-2)*8;
-            3+(i-2)*8,   13+(i-2)*8;
-            13+(i-2)*8,  14+(i-2)*8;
-            14+(i-2)*8,  11+(i-2)*8;
-            4+(i-2)*8,   15+(i-2)*8;
-            15+(i-2)*8,  16+(i-2)*8;
-            16+(i-2)*8,  12+(i-2)*8;
-            9+(i-2)*8,   13+(i-2)*8;
-            10+(i-2)*8,  15+(i-2)*8;
-            14+(i-2)*8,  17+(i-2)*8;
-            16+(i-2)*8,  18+(i-2)*8;
-            4+(i-2)*8,   11+(i-2)*8;
-            ];
+    bar.node_ij_mat=[bar.node_ij_mat;
+        (i-2)*8+3,   (i-2)*8+11;
+        (i-2)*8+11,   (i-2)*8+14;
+        (i-2)*8+13,   (i-2)*8+14;
+        (i-2)*8+13,   (i-2)*8+3;
+        
+        (i-2)*8+4,   (i-2)*8+12;
+        (i-2)*8+12,   (i-2)*8+16;
+        (i-2)*8+15,   (i-2)*8+16;
+        (i-2)*8+15,   (i-2)*8+4;
+
+        (i-2)*8+9,   (i-2)*8+13;
+        (i-2)*8+14,   (i-2)*8+17;
+        (i-2)*8+10,   (i-2)*8+15;
+        (i-2)*8+16,   (i-2)*8+18;        
+
+        (i-2)*8+3,   (i-2)*8+4;
+        ];
     end
+
 end
 
 barNum=size(bar.node_ij_mat,1);
@@ -203,8 +190,8 @@ actBar.E_vec=activeBarE*ones(actBarNum,1);
 
 plots.Plot_Shape_ActBar_Number();
 
-% % Initialize the entire assembly 
-% assembly.Initialize_Assembly();
+% Initialize the entire assembly 
+assembly.Initialize_Assembly();
 
 
 %% Define how rotational springs are connected
@@ -337,13 +324,13 @@ nr.assembly=assembly;
 nr.supp=[nodeNumVec,zeros(nodeNum,1),ones(nodeNum,1),zeros(nodeNum,1)];
 nr.supp(1,2:4)=ones(1,3);
 nr.supp(2,2:4)=ones(1,3);
-nr.supp(59,2:4)=ones(1,3);
-nr.supp(60,2:4)=ones(1,3);
+nr.supp(8*N-5,2:4)=ones(1,3);
+nr.supp(8*N-4,2:4)=ones(1,3);
 
 force=1000;
 step=10;
-nr.load=[27,0,0,-force/2;
-         28,0,0,-force/2;
+nr.load=[8*N/2-5,0,0,-force/2;
+         8*N/2-4,0,0,-force/2;
          ];
 
 % Set up the total loading step
@@ -357,14 +344,8 @@ nr.tol=10^-5;
 % Solve for the deformation history
 Uhis=nr.Solve();
 
-
 % Plot the deformed shape
 plots.Plot_Deformed_Shape(20*squeeze(Uhis(end,:,:)));
-
-
-% Also plot the deformation history
-plots.fileName="Rolling_Bridge_Load.gif";
-plots.Plot_Deformed_His(Uhis);
 
 
 % Failure load computation
@@ -374,27 +355,21 @@ internal_force=(truss_strain).*(bar.E_vec).*(bar.A_vec);
 
 % Find the maximum bar internal force
 [maxBarForce,index]=max(abs(internal_force));
-% maxBarForce=max(internal_force);
-
 
 % Find failure force for the bar
 sigma_u=300*10^6;
 barFailureForce=sigma_u*barA;
 
-
 % Find total bar length
 barLtotal=sum(bar.L0_vec);
 
-
 % Find Stiffness
-Uaverage=-mean(squeeze(Uhis(end,[27,28],3)));
+Uaverage=-mean(squeeze(Uhis(end,[11,12],3)));
 Kstiff=step*force/Uaverage;
-
 
 % Plot failure stress
 bar_stress=(truss_strain).*(bar.E_vec)*barFailureForce/maxBarForce;
 plots.Plot_Shape_Bar_Stress(bar_stress)
-
 
 % Find the relationship betweeen the bar internal forces and load
 loadatfail=step*force*barFailureForce/maxBarForce;

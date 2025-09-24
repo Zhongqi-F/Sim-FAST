@@ -3,7 +3,7 @@ clc;
 close all;
 
 %% Initialize the scissor 
-N=1;
+N=4;
 H=0.2286; % (m)
 L=0.2286; % (m)
 barA=0.0063*0.01; 
@@ -55,7 +55,7 @@ assembly=Assembly_Scissor_Bridge();
 cst=Vec_Elements_CST;
 rotSpr3N=CD_Elements_RotSprings_3N; 
 rotSpr4N=Vec_Elements_RotSprings_4N;
-bar=CD_Elements_Bars;
+bar=Std_Elements_Bars;
 
 assembly.cst=cst;
 assembly.node=node;

@@ -6,7 +6,7 @@ tic
 %% Define Geometry
 L=1;
 gap=0;
-N=1;
+N=4;
 
 node=Elements_Nodes;
 

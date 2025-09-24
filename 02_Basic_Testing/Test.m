@@ -8,18 +8,21 @@ node=Elements_Nodes;
 node.coordinates_mat=[0 0 0;
                       0 1 1;
                       0 0 2;
-                      0 -1 1];
+                      0 -1 1;
+                      0 0 1;];
 
-disp1=0.1;
-disp2=0;
+disp1=0;
+disp2=0.5;
 
 nodispMat=[0 0 0;
+           0 0 0;
            0 0 0;
            0 0 0;
            0 0 0;];
 
 dispMat=[0 0 0;
          disp1 disp2 0;
+         0 0 0;
          0 0 0;
          0 0 0;];
 
@@ -82,8 +85,10 @@ assembly.Initialize_Assembly;
 %% Define 3 Node spring
 
 rot_spr_3N.node_ijk_mat=[1 2 3;
-                         1 4 3;];
-rot_spr_3N.rot_spr_K_vec=[1;1];
+                         1 4 3;
+                         1 5 3];
+rot_spr_3N.rot_spr_K_vec=[1;1;1];
+
 rot_spr_3N.Initialize(node);
 
 
