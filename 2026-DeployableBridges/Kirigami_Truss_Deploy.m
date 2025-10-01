@@ -7,7 +7,7 @@ tic
 L=1;
 w=0.1;
 gap=0;
-N=4;
+N=8;
 
 node=Elements_Nodes;
 node.coordinates_mat=[node.coordinates_mat;
@@ -66,6 +66,8 @@ assembly.rot_spr_4N=rot_spr_4N;
 plots=Plot_Kirigami_Truss;
 plots.assembly=assembly;
 plots.displayRange=[-1; L*(N+1); -1; 2; -1; 2];
+plots.viewAngle1=20;
+plots.viewAngle2=20;
 
 plots.Plot_Shape_Node_Number;
 

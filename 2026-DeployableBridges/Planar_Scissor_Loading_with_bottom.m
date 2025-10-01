@@ -49,13 +49,17 @@ node.coordinates_mat=[0*L 0 0;
 
 for i=1:N
     node.coordinates_mat=[node.coordinates_mat;
-      (i-0.5)*L 0 0.5*H; 
-      (i-0.75)*L 0 0.25*H; 
-      (i-0.25)*L 0 0.25*H; 
-      (i-0.75)*L 0 0.75*H; 
-      (i-0.25)*L 0 0.75*H; 
-      i*L 0 0;
-      i*L 0 H;
+      (i-1)+L/4  0  H/4;
+      (i-1)+L/4  0  3*H/4;
+      (i-1)+L/2  0  H/2;
+      (i-1)+3*L/4  0  H/4;
+      (i-1)+3*L/4  0  3*H/4;
+      (i-1)+L  0  0;
+      (i-1)+L  0  H;
+
+      (i-1)+L/4  0  0;
+      (i-1)+L/2  0  0;
+      (i-1)+3*L/4  0  0;  % bottom
       ];
 end
 
@@ -78,18 +82,40 @@ plots.Plot_Shape_Node_Number()
 
 %% Bar Definition
 
-for i=1:N
-    bar.node_ij_mat=[bar.node_ij_mat;
-        (i-1)*7+1 (i-1)*7+4;
-        (i-1)*7+4 (i-1)*7+3;
-        (i-1)*7+3 (i-1)*7+7;
-        (i-1)*7+7 (i-1)*7+9;
-        (i-1)*7+2 (i-1)*7+6;
-        (i-1)*7+6 (i-1)*7+3;
-        (i-1)*7+3 (i-1)*7+5;
-        (i-1)*7+5 (i-1)*7+8;];    
 
-end
+    bar.node_ij_mat=[bar.node_ij_mat;
+        1 3;
+        3 5;
+        5 7;
+        7 9;
+
+        2 4;
+        4 5;
+        5 6;
+        6 8;
+
+        8 13;
+        13 15;
+        15 17;
+        17 19;
+
+        9 14;
+        14 15;
+        15 16;
+        16 18;
+
+        1 10;
+        10 11;
+        11 12;
+        12 8;
+
+        8 20;
+        20 21;
+        21 22;
+        22 18;
+        ];    
+
+
 
 % Define the area of the bars
 barNum=size(bar.node_ij_mat,1);
@@ -108,12 +134,29 @@ plots.Plot_Shape_Bar_Number()
 
 for i=1:N
     rot_spr_3N.node_ijk_mat=[rot_spr_3N.node_ijk_mat;
-        (i-1)*7+1 (i-1)*7+4 (i-1)*7+3;
-        (i-1)*7+4 (i-1)*7+3 (i-1)*7+7;
-        (i-1)*7+3 (i-1)*7+7 (i-1)*7+9;
-        (i-1)*7+2 (i-1)*7+6 (i-1)*7+3;
-        (i-1)*7+6 (i-1)*7+3 (i-1)*7+5;
-        (i-1)*7+3 (i-1)*7+5 (i-1)*7+8;
+        1 3 5;
+        3 5 7;
+        5 7 9;
+
+        2 4 5;
+        4 5 6;
+        5 6 8;
+
+        8 13 15;
+        13 15 17;
+        15 17 19;
+
+        9 14 15;
+        14 15 16;
+        15 16 18;
+
+        1 10 11;
+        10 11 12;
+        11 12 8;
+
+        8 20 21;
+        20 21 22;
+        21 22 18;
         ]; 
 end
 
@@ -140,7 +183,7 @@ nodeNum=size(node.coordinates_mat,1);
 nr.supp=[(1:nodeNum)', zeros(nodeNum,1), ones(nodeNum,1), zeros(nodeNum,1)];
 
 nr.supp(1,:)=[1,1,1,1];
-nr.supp(N*7+1,:)=[N*7+1,1,1,1];
+nr.supp(18,:)=[18,1,1,1];
 
 [F,K]= assembly.Solve_FK(zeros(nodeNum,3));
 [Frs3,Krs3]= assembly.rot_spr_3N.Solve_FK(node,zeros(nodeNum,3));
@@ -148,7 +191,7 @@ figure
 spy(Krs3)
 
 % Set up the load
-nr.load=[N/2*7+1,0,0,-1];
+nr.load=[8,0,0,-1];
 
 % Set up the total loading step
 nr.increStep=5;

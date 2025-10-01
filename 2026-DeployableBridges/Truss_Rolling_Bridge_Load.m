@@ -69,6 +69,10 @@ plots.assembly=assembly;
 % We will plot for the Rolling Bridge
 plots.displayRange=[-0.5;N+0.5;-0.5;1.5;-0.5;1.5]; 
 
+plots.viewAngle1=20;
+plots.viewAngle2=20;
+
+
 % Plot the nodal coordinates for inspection
 plots.Plot_Shape_Node_Number()
 

@@ -8,7 +8,7 @@ W=1;
 L=1;
 l=0.3;
 
-N=12;
+N=8;
 
 barA=0.01;
 barE=2*10^9;
@@ -66,6 +66,9 @@ plots.assembly=assembly;
 
 % We will plot for the Rolling Bridge
 plots.displayRange=[-2;14;-1;2;-1;10]; 
+plots.viewAngle1=20;
+plots.viewAngle2=20;
+
 
 % Plot the nodal coordinates for inspection
 plots.Plot_Shape_Node_Number()
@@ -187,7 +190,7 @@ ta.iterMax=30;
 % Set up the tolorence
 ta.tol=10^-4;
 
-dL=0.5;
+dL=0.6;
 ta.targetL0=actBar.L0_vec;
 ta.targetL0=ta.targetL0+dL;
 

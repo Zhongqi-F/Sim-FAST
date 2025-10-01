@@ -8,7 +8,7 @@ L=1;
 W=2;
 H=1;
 gap=0;
-N=8;
+N=4;
 
 barA=0.01;
 barE=2*10^9;
@@ -54,6 +54,9 @@ assembly.rot_spr_4N=rot_spr_4N;
 plots=Plot_Kirigami_Truss;
 plots.assembly=assembly;
 plots.displayRange=[-0.5; 2*N+0.5; -0.5; W+0.5; -0.5; H+0.5];
+
+plots.viewAngle1=20;
+plots.viewAngle2=20;
 
 plots.Plot_Shape_Node_Number;
 

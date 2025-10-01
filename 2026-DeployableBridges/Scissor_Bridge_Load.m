@@ -71,6 +71,10 @@ assembly.rot_spr_4N=rotSpr4N;
 plots=Plot_Scissor_Bridge; 
 plots.assembly=assembly;
 plots.displayRange=[-0.5; N+0.5; -0.5; 1.5; -0.5; 1.5]; 
+
+plots.viewAngle1=20;
+plots.viewAngle2=20;
+
 plots.Plot_Shape_Node_Number;
 
 %% Define Triangle
@@ -137,7 +141,7 @@ for i=1:N
         19*(i-1)+15   19*(i-1)+20;
         19*(i-1)+2    19*(i-1)+16;
         19*(i-1)+16   19*(i-1)+21;
-        19*(i-1)+20   19*(i-1)+21;
+        
         19*(i-1)+2    19*(i-1)+15;
         19*(i-1)+16   19*(i-1)+20;
         ];
@@ -146,6 +150,7 @@ end
 bar.node_ij_mat=[
         bar.node_ij_mat;
         19*N+3    19*N+4;
+        19*N+1   19*N+2;
         ];
 
 barNum=size(bar.node_ij_mat);
