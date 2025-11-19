@@ -8,7 +8,7 @@ W=1;
 L=1;
 l=0.3;
 
-N=12;
+N=10;
 
 barA=0.01;
 barE=2*10^9;
@@ -65,7 +65,7 @@ plots=Plot_Truss_Rolling_Bridge();
 plots.assembly=assembly;
 
 % We will plot for the Rolling Bridge
-plots.displayRange=[-2;14;-1;2;-1;10]; 
+plots.displayRange=[-3;14;-3;8;-3;10]; 
 
 % Plot the nodal coordinates for inspection
 plots.Plot_Shape_Node_Number()
@@ -198,6 +198,11 @@ Uhis=ta.Solve();
 plots.Plot_Deformed_Shape(squeeze(Uhis(end,:,:)));
 
 % Also plot the deformation history
+plots.width=1600;
+plots.height=1200;
+plots.viewAngle1=15;
+plots.viewAngle2=25;
+plots.displayRange=[-3;14;-5;5;-3;10]; 
 plots.fileName="Truss_Rolling_Bridge_Deploy.gif";
 plots.Plot_Deformed_His(Uhis(1:10:end,:,:));
 

@@ -77,8 +77,8 @@ plots=Plot_Kirigami_Truss;
 plots.assembly=assembly;
 plots.displayRange=[-0.5; N+0.5; -0.5; 1.5; -0.5; 1.5];
 
-plots.viewAngle1=0;
-plots.viewAngle2=0;
+plots.viewAngle1=20;
+plots.viewAngle2=20;
 
 plots.Plot_Shape_Node_Number;
 

@@ -200,7 +200,7 @@ assembly.node=node;
 
 cst=Vec_Elements_CST;
 rotSpr=Vec_Elements_RotSprings_4N;
-actBar=CD_Elements_Cable;
+%actBar=CD_Elements_Bar;
 
 % assembly.actBar=actBar;
 assembly.cst=cst;
@@ -459,8 +459,9 @@ toc
 
 plots.Plot_DeformedShape(squeeze(Uhis(1,:,:)))
 plots.Plot_DeformedShape(squeeze(Uhis(end,:,:)))
-plots.fileName='Three_Finger_Extending.gif';
-plots.Plot_DeformedHis(Uhis(1:10:end,:,:))
+UhisExtend=Uhis;
+% plots.fileName='Three_Finger_Extending.gif';
+% plots.Plot_DeformedHis(Uhis(1:10:end,:,:))
 
 %% Bending
 
@@ -587,7 +588,9 @@ for k=1:step
 end
 
 plots.Plot_DeformedShape(squeeze(Uhis(end,:,:)))
-plots.fileName='Three_Finger_Grasping.gif';
+
+plots.fileName='Three_Finger_Gripper.gif';
+Uhis=cat(1,UhisExtend,Uhis);
 plots.Plot_DeformedHis(Uhis(1:10:end,:,:))
 
 %% Solve the applied force due to pressure
