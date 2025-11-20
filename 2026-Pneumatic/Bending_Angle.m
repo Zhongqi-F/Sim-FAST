@@ -1,27 +1,27 @@
 clear all
 close all
 clc
-
 tic
 
 %% Define Geometry
-
-sectionNum=10;
-
+sectionNum=3;
 layerL=0.06;
-holeL=0.005;
+holeL=0.004;
 layerH=0.002;
 
-t=0.00011; % 0.11mm
-E=1.3*10^9;
-v=0.2;
+% film properties
+t=0.00011; % 0.11mm for the thickness of film
+E=1.3*10^9; % Young's modulus of the film
+v=0.2; % Poisson's Ratio of the film
 
-kspr=E*t^3/12;
-factor=0.14;
-barA=t*layerL*factor;
+% rotational spring's stiffness
+kspr=E*t^3/12; % The rotational springs' stiffness
 
+% target pressure
+targetP=40000;
+
+%% Define the Nodal Coordinates
 node=Elements_Nodes;
-
 for i=1:sectionNum
     node.coordinates_mat=[node.coordinates_mat
         -holeL/2 -holeL/2 (i-1)*layerH;
@@ -55,8 +55,6 @@ for i=1:sectionNum
         0 layerL/4 (i-0.2)*layerH;
         -layerL/4 layerL/4 (i-0.2)*layerH;
         -layerL/4 0 (i-0.2)*layerH;
-
-
         ];
 end
 
@@ -73,9 +71,7 @@ assembly.node=node;
 
 cst=Vec_Elements_CST;
 rotSpr=Vec_Elements_RotSprings_4N;
-%actBar=CD_Elements_Cable;
 
-%assembly.actBar=actBar;
 assembly.cst=cst;
 assembly.rotSpr=rotSpr;
 
@@ -84,12 +80,14 @@ plots=Plot_Membrane;
 plots.assembly=assembly;
 plots.displayRange=[-1; 1; -1; 1; -1; sectionNum/3]*layerL;
 
+% plot the nodal location for inspection
 plots.Plot_Shape_NodeNumber;
 
 
-%% Set up the triangle information for pressure
+%% Set up the Triangle Elements
 tri_ijk=[];
 tri_direction=[];
+
 for i=1:sectionNum  
     tri_ijk=[tri_ijk;
         (i-1)*28+1 (i-1)*28+2 (i-1)*28+6;    
@@ -123,9 +121,9 @@ for i=1:sectionNum
         (i-1)*28+11 (i-1)*28+12 (i-1)*28+20; 
         (i-1)*28+12 (i-1)*28+5 (i-1)*28+20;
         (i-1)*28+5 (i-1)*28+20 (i-1)*28+13; 
-
-
         ];   
+
+    % The bottom film is facing down
     tri_direction=[tri_direction;
         -ones(28,1)];
 
@@ -161,15 +159,18 @@ for i=1:sectionNum
         (i-1)*28+11+16 (i-1)*28+12+16 (i-1)*28+20; 
         (i-1)*28+12+16 (i-1)*28+5+16 (i-1)*28+20;
         (i-1)*28+5+16 (i-1)*28+20 (i-1)*28+13; 
-
         ];   
+
+    % The top film is facing up
     tri_direction=[tri_direction;
         ones(28,1)];
 end
 
+% number of triangles
 triNum=size(tri_ijk,1);
 
-% Organize the trinagle sequence for the rigth direction
+% Organize the trinagle sequence so that 
+% the normal vector points to the out side
 for i=1:triNum
     x1=node.coordinates_mat(tri_ijk(i,1),:);
     x2=node.coordinates_mat(tri_ijk(i,2),:);
@@ -185,13 +186,15 @@ for i=1:triNum
     end
 end
 
-%% Define Triangle
+% Define Triangle Elements
 cst.node_ijk_mat=tri_ijk;
-cstNum=size(cst.node_ijk_mat,1);
-cst.E_vec=E*ones(cstNum,1);
-cst.t_vec=t*ones(cstNum,1);
-cst.v_vec=v*ones(cstNum,1);
 
+% Define Young's modulus, thickness, Poisson's ratio
+cst.E_vec=E*ones(triNum,1);
+cst.t_vec=t*ones(triNum,1);
+cst.v_vec=v*ones(triNum,1);
+
+% Plot the CST elements for inspection
 plots.Plot_Shape_CSTNumber;
 
 %% Define Rotational Spring
@@ -246,6 +249,7 @@ for i=1:sectionNum
         (i)*28+3 (i)*28+4 (i-1)*28+10+16 (i-1)*28+11+16;
         (i)*28+4 (i)*28+1 (i-1)*28+12+16 (i-1)*28+5+16;
         ];
+
     if i<sectionNum
         rotSpr.node_ijkl_mat=[rotSpr.node_ijkl_mat;
             (i-1)*28+22 (i-1)*28+29 (i-1)*28+30 (i-1)*28+34;
@@ -256,20 +260,23 @@ for i=1:sectionNum
     end
 end
 
+% Rotational angle where contact will come into effects
+rotSpr.theta1=0.1*pi;
+rotSpr.theta2=(2-0.1)*pi;
 
-% Find the bending stiffness
+% Define the bending stiffness
 sprNum=size(rotSpr.node_ijkl_mat,1);
 rotSpr.rot_spr_K_vec=kspr*ones(sprNum,1);
+
+% Plot the rotational springs for inspection
 plots.Plot_Shape_SprNumber;
 
-% Initialize the assembly
+
+%% Initialize the assembly
 assembly.Initialize_Assembly;
 
-% Check force matrix
-xcurrent=node.coordinates_mat+node.current_U_mat;
-fmat=SolvePressureForce(xcurrent,100,tri_ijk);
 
-%% Set up solver
+%% Set up solver for inflation process
 nr=Solver_NR_Loading;
 nr.assembly=assembly;
 
@@ -280,109 +287,127 @@ nr.supp=[
     4 1 1 1;
 ];
 
-step=150;
-targetP=20000;
+step=100;
 
-Uhis=[];
+UhisInflate=[];
 for k=1:step
 
-    if k<5
-        subStep=30;
+    % To help with convergence, we further make the first few steps 
+    % to have smaller step lengths 
+    if k<3
+        subStep=20;
         for q=1:subStep
+            % Update the pressure forces for nonlinearity
             xcurrent=node.coordinates_mat+node.current_U_mat;
-    
             nodeNum=size(node.coordinates_mat,1);
             fmat=SolvePressureForce(xcurrent,(k-1+q/subStep)/step*targetP,tri_ijk);
             fpressure=[(1:nodeNum)',fmat];
-        
+
             nr.load=fpressure;
-            
             nr.increStep=1;
             nr.iterMax=20;
             nr.tol=10^-8;
-        
+
             Utemp=nr.Solve();
         end
-        Uhis(k,:,:)=squeeze(nr.Solve());
+        UhisInflate(k,:,:)=squeeze(nr.Solve());
     end
 
+    % Update the pressure forces for nonlinearity
     xcurrent=node.coordinates_mat+node.current_U_mat;
-
     nodeNum=size(node.coordinates_mat,1);
     fmat=SolvePressureForce(xcurrent,k/step*targetP,tri_ijk);
     fpressure=[(1:nodeNum)',fmat];
 
-    nr.load=fpressure;
-    
+    nr.load=fpressure;    
     nr.increStep=1;
     nr.iterMax=20;
-    nr.tol=10^-8;
+    nr.tol=10^-6;
 
-    Uhis(k,:,:)=squeeze(nr.Solve());
+    UhisInflate(k,:,:)=squeeze(nr.Solve());
 
 end
-toc
 
-plots.Plot_DeformedShape(squeeze(Uhis(1,:,:)))
-plots.Plot_DeformedShape(squeeze(Uhis(end,:,:)))
+% Plot the inflated configuration
+figure;
+plots.Plot_DeformedShape(squeeze(UhisInflate(end,:,:)))
 
 
-%% Loading at mid span
-
+%% Set up solver for the bending experiments
 nr.supp=[
     13 1 1 1;    
-    15 1 1 1;
-    17 1 1 1;
-    19 1 1 1;
-    265 1 1 1;
-    267 1 1 1;
-    269 1 1 1;
-    271 1 1 1;
+    15 0 1 1;
+    17 1 0 1;
+    19 0 0 1;
 ];
 
 step=100;
-targetF=1.2;
+targetF=0.5;
 
 Uhis=[];
 for k=1:step
 
+    % Update the pressure forces for nonlinearity
     xcurrent=node.coordinates_mat+node.current_U_mat;
-
     nodeNum=size(node.coordinates_mat,1);
     fmat=SolvePressureForce(xcurrent,targetP,tri_ijk);
     fpressure=[(1:nodeNum)',fmat];
 
-    fpressure(125,3)=fpressure(125,3)+k*targetF/step/4;
-    fpressure(127,3)=fpressure(127,3)+k*targetF/step/4;
-    fpressure(153,3)=fpressure(153,3)+k*targetF/step/4;
-    fpressure(155,3)=fpressure(155,3)+k*targetF/step/4;
-
-    nr.load=fpressure;
+    % Apply the cable tension as forces
+    for i=1:sectionNum-1
     
+        n1=xcurrent((i)*28+13,:);
+        n2=xcurrent((i-1)*28+13,:);
+
+        v1=n2-n1;
+        v2=n1-n2;
+
+        v1=v1/norm(v1);
+        v2=v2/norm(v2);
+
+        fpressure((i)*28+13,2:4)=fpressure((i)*28+13,2:4)+v1*targetF*k/step;
+        fpressure((i-1)*28+13,2:4)=fpressure((i-1)*28+13,2:4)+v2*targetF*k/step;
+
+        n1=xcurrent((i)*28+15,:);
+        n2=xcurrent((i-1)*28+15,:);
+
+        v1=n2-n1;
+        v2=n1-n2;
+
+        v1=v1/norm(v1);
+        v2=v2/norm(v2);
+
+        fpressure((i)*28+15,2:4)=fpressure((i)*28+15,2:4)+v1*targetF*k/step;
+        fpressure((i-1)*28+15,2:4)=fpressure((i-1)*28+15,2:4)+v2*targetF*k/step;
+
+    end
+
+    nr.load=fpressure;    
     nr.increStep=1;
     nr.iterMax=20;
-    nr.tol=10^-8;
+    nr.tol=10^-6;
 
     Uhis(k,:,:)=squeeze(nr.Solve());
 
 end
-toc
 
+% Compute Bending Angle
+angle_v1 = xcurrent(72,:)-xcurrent(70,:);
+angle_v2 = xcurrent(76,:)-xcurrent(70,:);
+angle_cross_v = cross(angle_v1,angle_v2);
+angle_z = [0,0,1];
+cosTheta = dot(angle_cross_v, angle_z) / (norm(angle_cross_v) * norm(angle_z));
+theta_rad = acos(cosTheta);
+theta_deg = rad2deg(theta_rad); % Bending Angle
+
+% Plot the bending configuration
+figure;
 plots.Plot_DeformedShape(squeeze(Uhis(end,:,:)))
-Uref=Uhis(:,[125,127,153,155],2);
-Uref=squeeze(Uref);
-Uref=mean(Uref,2);
 
-Fhis=(1:step)/step*targetF;
-
-figure
-plot(Uref,Fhis);
-
-plots.fileName='Ten_Layer_Loading.gif';
+% Get the full animation
+Uhis=cat(1,UhisInflate,Uhis);
+plots.fileName='Bending_Angle.gif';
 plots.Plot_DeformedHis(Uhis(1:10:end,:,:))
-
-
-
 
 
 %% Solve the applied force due to pressure

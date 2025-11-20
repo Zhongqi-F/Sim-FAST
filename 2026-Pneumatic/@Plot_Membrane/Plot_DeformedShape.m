@@ -10,8 +10,6 @@ Vratio=obj.displayRangeRatio;
 assembly=obj.assembly;
 undeformedNode=assembly.node.coordinates_mat;
 
-figure;
-
 set(gcf, 'color', 'white');
 set(gcf,'position',[obj.x0,obj.y0,obj.width,obj.height])
 
