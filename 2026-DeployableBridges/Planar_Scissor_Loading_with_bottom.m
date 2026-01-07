@@ -54,12 +54,13 @@ for i=1:N
       (i-1)+L/2  0  H/2;
       (i-1)+3*L/4  0  H/4;
       (i-1)+3*L/4  0  3*H/4;
-      (i-1)+L  0  0;
-      (i-1)+L  0  H;
 
       (i-1)+L/4  0  0;
       (i-1)+L/2  0  0;
       (i-1)+3*L/4  0  0;  % bottom
+
+      (i-1)+L  0  0;
+      (i-1)+L  0  H;
       ];
 end
 
@@ -82,39 +83,22 @@ plots.Plot_Shape_Node_Number()
 
 %% Bar Definition
 
-
+for i=1:N
     bar.node_ij_mat=[bar.node_ij_mat;
-        1 3;
-        3 5;
-        5 7;
-        7 9;
+        (i-1)*10+1 (i-1)*10+3;
+        (i-1)*10+3 (i-1)*10+5;
+        (i-1)*10+5 (i-1)*10+7;
+        (i-1)*10+7 (i-1)*10+12;
+        (i-1)*10+2 (i-1)*10+4;
+        (i-1)*10+4 (i-1)*10+5;
+        (i-1)*10+5 (i-1)*10+6;
+        (i-1)*10+6 (i-1)*10+11;
+        (i-1)*10+1 (i-1)*10+8;
+        (i-1)*10+8 (i-1)*10+9;
+        (i-1)*10+9 (i-1)*10+10;
+        (i-1)*10+10 (i-1)*10+11;];    
 
-        2 4;
-        4 5;
-        5 6;
-        6 8;
-
-        8 13;
-        13 15;
-        15 17;
-        17 19;
-
-        9 14;
-        14 15;
-        15 16;
-        16 18;
-
-        1 10;
-        10 11;
-        11 12;
-        12 8;
-
-        8 20;
-        20 21;
-        21 22;
-        22 18;
-        ];    
-
+end
 
 
 % Define the area of the bars
@@ -134,29 +118,17 @@ plots.Plot_Shape_Bar_Number()
 
 for i=1:N
     rot_spr_3N.node_ijk_mat=[rot_spr_3N.node_ijk_mat;
-        1 3 5;
-        3 5 7;
-        5 7 9;
+        (i-1)*10+1 (i-1)*10+3 (i-1)*10+5;
+        (i-1)*10+3 (i-1)*10+5 (i-1)*10+7;
+        (i-1)*10+5 (i-1)*10+7 (i-1)*10+12;
+        
+        (i-1)*10+2 (i-1)*10+4 (i-1)*10+5;
+        (i-1)*10+4 (i-1)*10+5 (i-1)*10+6;
+        (i-1)*10+5 (i-1)*10+6 (i-1)*10+11;
 
-        2 4 5;
-        4 5 6;
-        5 6 8;
-
-        8 13 15;
-        13 15 17;
-        15 17 19;
-
-        9 14 15;
-        14 15 16;
-        15 16 18;
-
-        1 10 11;
-        10 11 12;
-        11 12 8;
-
-        8 20 21;
-        20 21 22;
-        21 22 18;
+        (i-1)*10+1 (i-1)*10+8 (i-1)*10+9;
+        (i-1)*10+8 (i-1)*10+9 (i-1)*10+10;
+        (i-1)*10+9 (i-1)*10+10 (i-1)*10+11;
         ]; 
 end
 
@@ -183,7 +155,7 @@ nodeNum=size(node.coordinates_mat,1);
 nr.supp=[(1:nodeNum)', zeros(nodeNum,1), ones(nodeNum,1), zeros(nodeNum,1)];
 
 nr.supp(1,:)=[1,1,1,1];
-nr.supp(18,:)=[18,1,1,1];
+nr.supp(21,:)=[21,1,1,1];
 
 [F,K]= assembly.Solve_FK(zeros(nodeNum,3));
 [Frs3,Krs3]= assembly.rot_spr_3N.Solve_FK(node,zeros(nodeNum,3));
@@ -191,7 +163,7 @@ figure
 spy(Krs3)
 
 % Set up the load
-nr.load=[8,0,0,-1];
+nr.load=[11,0,0,-100];
 
 % Set up the total loading step
 nr.increStep=5;
@@ -238,14 +210,14 @@ for j=1:barNum
          [node1(3),node2(3)],'Color','k');
 end
 
-momentFactor=0.04;
+momentFactor=0.0004;
 
 for i=1:N
-    p1=node.coordinates_mat((i-1)*7+1,:);
-    p2=node.coordinates_mat((i-1)*7+4,:)+[-sqrt(2) 0 sqrt(2)]*RotM((i-1)*6+1)*momentFactor;
-    p3=node.coordinates_mat((i-1)*7+3,:)+[-sqrt(2) 0 sqrt(2)]*RotM((i-1)*6+2)*momentFactor;
-    p4=node.coordinates_mat((i-1)*7+7,:)+[-sqrt(2) 0 sqrt(2)]*RotM((i-1)*6+3)*momentFactor;
-    p5=node.coordinates_mat((i-1)*7+9,:);
+    p1=node.coordinates_mat((i-1)*10+1,:);
+    p2=node.coordinates_mat((i-1)*10+3,:)+[-sqrt(2) 0 sqrt(2)]*RotM((i-1)*9+1)*momentFactor;
+    p3=node.coordinates_mat((i-1)*10+5,:)+[-sqrt(2) 0 sqrt(2)]*RotM((i-1)*9+2)*momentFactor;
+    p4=node.coordinates_mat((i-1)*10+7,:)+[-sqrt(2) 0 sqrt(2)]*RotM((i-1)*9+3)*momentFactor;
+    p5=node.coordinates_mat((i-1)*10+12,:);
 
     px=[p1(1) p2(1) p3(1) p4(1) p5(1)];
     py=[p1(2) p2(2) p3(2) p4(2) p5(2)];
@@ -253,11 +225,11 @@ for i=1:N
     patch(px,py,pz,'blue','FaceAlpha',.3)
 
 
-    p1=node.coordinates_mat((i-1)*7+2,:);
-    p2=node.coordinates_mat((i-1)*7+6,:)+[sqrt(2) 0 sqrt(2)]*RotM((i-1)*6+4)*momentFactor;
-    p3=node.coordinates_mat((i-1)*7+3,:)+[sqrt(2) 0 sqrt(2)]*RotM((i-1)*6+5)*momentFactor;
-    p4=node.coordinates_mat((i-1)*7+5,:)+[sqrt(2) 0 sqrt(2)]*RotM((i-1)*6+6)*momentFactor;
-    p5=node.coordinates_mat((i-1)*7+8,:);
+    p1=node.coordinates_mat((i-1)*10+2,:);
+    p2=node.coordinates_mat((i-1)*10+4,:)+[sqrt(2) 0 sqrt(2)]*RotM((i-1)*9+4)*momentFactor;
+    p3=node.coordinates_mat((i-1)*10+5,:)+[sqrt(2) 0 sqrt(2)]*RotM((i-1)*9+5)*momentFactor;
+    p4=node.coordinates_mat((i-1)*10+6,:)+[sqrt(2) 0 sqrt(2)]*RotM((i-1)*9+6)*momentFactor;
+    p5=node.coordinates_mat((i-1)*10+11,:);
 
     px=[p1(1) p2(1) p3(1) p4(1) p5(1)];
     py=[p1(2) p2(2) p3(2) p4(2) p5(2)];

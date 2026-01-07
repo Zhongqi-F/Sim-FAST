@@ -4,8 +4,8 @@ close all;
 
 %% Initialize the scissor 
 N=8;
-H=0.2286; % (m)
-L=0.2286; % (m)
+H=1; %0.2286; % (m)
+L=1; %0.2286; % (m)
 barA=0.0063*0.01; 
 barE=2*10^9; % (Pa)
 
@@ -215,7 +215,7 @@ sf.supp = [1    1 1 1;
            4    1 1 0;
            ];
 
-sf.increStep = 200;
+sf.increStep = 50; %200;
 sf.targetRot = assembly.rot_spr_4N.theta_current_vec;
 
 targetAngle=0.9*pi;
