@@ -13,6 +13,7 @@ panel_E=200*10^9;
 panel_t=0.05;
 panel_v=0.2;
 
+
 I=1/12*0.01^4; 
 barL=sqrt(H^2+L^2);
 kspr=3*barE*I/barL;

@@ -20,6 +20,7 @@ activeBarE=80*10^9;
 % I=1/12*0.01^4;
 % kspr=3*barE*I/L2*100000;
 
+
 node=Elements_Nodes;
 bar=Vec_Elements_Bars;
 actBar=CD_Elements_Bars;
