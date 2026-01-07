@@ -4,51 +4,61 @@ clc
 tic
 
 %% Define Geometry
-L=1;
-w=0.1;
+N=8;
+L=1.8; 
+W=2;
+H=2;
+w=0.2;
 gap=0;
-N=4;
+
+barA=0.01;
+barE=2*10^9;
+panel_E=200*10^9;
+panel_t=0.05;
+panel_v=0.2;
+
 
 node=Elements_Nodes;
 node.coordinates_mat=[node.coordinates_mat;
-        -w, 0, 0;
-        -w, L, 0;
-        -w, 0, L;
-        -w, L, L;];
+        -w, 0, 0; % 1
+        -w, W, 0; % 2
+        -w, 0, H; % 3
+        -w, W, H;]; % 4
 
 for i=1:N
     node.coordinates_mat=[node.coordinates_mat;
         (w+L)*(i-1), 0, 0;
-        (w+L)*(i-1), L, 0;
-        (w+L)*(i-1), 0, L;
-        (w+L)*(i-1), L, L;
+        (w+L)*(i-1), W, 0;
+        (w+L)*(i-1), 0, H;
+        (w+L)*(i-1), W, H;
 
         (w+L)*(i-1)+L/2, 0, 0;
         (w+L)*(i-1)+L/2, 0, gap;
-        (w+L)*(i-1)+L/2, L, 0;
-        (w+L)*(i-1)+L/2, L, gap;
+        (w+L)*(i-1)+L/2, W, 0;
+        (w+L)*(i-1)+L/2, W, gap;
 
-        (w+L)*(i-1)+L/2, 0, L;
-        (w+L)*(i-1)+L/2, gap, L;
-        (w+L)*(i-1)+L/2, L, L;
-        (w+L)*(i-1)+L/2, L, L-gap;
+        (w+L)*(i-1)+L/2, 0, H;
+        (w+L)*(i-1)+L/2, gap, H;
+        (w+L)*(i-1)+L/2, W, H;
+        (w+L)*(i-1)+L/2, W, H-gap;
 
-        (w+L)*(i-1)+L/2, L/2, 0;
-        (w+L)*(i-1)+L/2, L/2, L;
-        (w+L)*(i-1)+L/2, 0, L/2;
-        (w+L)*(i-1)+L/2, L, L/2;
+        (w+L)*(i-1)+L/2, W/2, 0;
+        (w+L)*(i-1)+L/2, W/2, H;
+        (w+L)*(i-1)+L/2, 0, H/2;
+        (w+L)*(i-1)+L/2, W, H/2;
 
         (w+L)*(i-1)+L, 0, 0;
-        (w+L)*(i-1)+L, L, 0;
-        (w+L)*(i-1)+L, 0, L;
-        (w+L)*(i-1)+L, L, L;];
+        (w+L)*(i-1)+L, W, 0;
+        (w+L)*(i-1)+L, 0, H;
+        (w+L)*(i-1)+L, W, H;];
 end
 
 node.coordinates_mat=[node.coordinates_mat;
         (w+L)*N, 0, 0;
-        (w+L)*N, L, 0;
-        (w+L)*N, 0, L;
-        (w+L)*N, L, L;];
+        (w+L)*N, W, 0;
+        (w+L)*N, 0, H;
+        (w+L)*N, W, H;
+        ];
 
 
 %% Define assembly
@@ -65,7 +75,8 @@ assembly.rot_spr_4N=rot_spr_4N;
 %% Define Plotting Functions
 plots=Plot_Kirigami_Truss;
 plots.assembly=assembly;
-plots.displayRange=[-1; L*(N+1); -1; 2; -1; 2];
+plots.displayRange=[-0.5; 16.5; -0.5; 2.5; -0.5; 2.5];
+
 plots.viewAngle1=20;
 plots.viewAngle2=20;
 
@@ -97,9 +108,9 @@ for i=1:N
 end
 
 cstNum=size(cst.node_ijk_mat,1);
-cst.t_vec=0.05*ones(cstNum,1);
-cst.E_vec=2*10^9*ones(cstNum,1);
-cst.v_vec=0.2*ones(cstNum,1);
+cst.t_vec=panel_t*ones(cstNum,1);
+cst.E_vec=panel_E*ones(cstNum,1);
+cst.v_vec=panel_v*ones(cstNum,1);
 
 plots.Plot_Shape_CST_Number;
 
@@ -149,13 +160,25 @@ for i=1:N
         20*(i-1)+17   20*(i-1)+22;
         20*(i-1)+9   20*(i-1)+21;
         20*(i-1)+17   20*(i-1)+21; %40
+
+        20*(i-1)+1    20*(i-1)+5;
+        20*(i-1)+2    20*(i-1)+6;
+        20*(i-1)+3    20*(i-1)+7;
+        20*(i-1)+4    20*(i-1)+8; % add new bars
+
         ];
 end
 
-barNum=size(bar.node_ij_mat,1);
-bar.A_vec=0.01*ones(barNum,1);
-bar.E_vec=2*10^9*ones(barNum,1);
+bar.node_ij_mat=[bar.node_ij_mat;
+    20*N+1   20*N+5;
+    20*N+2   20*N+6;
+    20*N+3   20*N+7;
+    20*N+4   20*N+8;
+    ];
 
+barNum=size(bar.node_ij_mat,1);
+bar.A_vec=barA*ones(barNum,1);
+bar.E_vec=barE*ones(barNum,1);
 plots.Plot_Shape_Bar_Number();
 
 %% Define Rotational Spring
@@ -241,63 +264,204 @@ plots.Plot_Shape_Spr_Number;
 assembly.Initialize_Assembly;
 
 
-%% Set up solver
-sf=Solver_NR_Folding_4N;
-sf.assembly=assembly;
+%% Calculate self-weight 
+rho_steel=7850;         % kg/m^3
+A_bar=barA;             % m^2, (same as bar.A_vec)
 
-sf.supp=[1 1 1 1;
-         2 1 1 1;
-         3 1 1 1;
-         4 1 1 1;];
+% a. Find total length of all bar elements
+L_total=0;
+barNodeMat=bar.node_ij_mat;
+coords=node.coordinates_mat;
 
-sf.targetRot=rot_spr_4N.theta_stress_free_vec;
-
-sf.increStep=500;
-sf.iterMax=20;
-sf.tol=1*10^-4;
-
-rate=0.9;
-
-for i=1:N
-    sf.targetRot((i-1)*40+11)=pi+rate*pi;
-    sf.targetRot((i-1)*40+13)=pi+rate*pi;
-
-    sf.targetRot((i-1)*40+10)=pi-rate*pi;
-    sf.targetRot((i-1)*40+14)=pi-rate*pi;
-    sf.targetRot((i-1)*40+15)=pi-rate*pi;
-    sf.targetRot((i-1)*40+16)=pi-rate*pi;
-
-    sf.targetRot((i-1)*40+20)=pi-rate*pi;
-    sf.targetRot((i-1)*40+21)=pi-rate*pi;
-
-    sf.targetRot((i-1)*40+18)=pi+rate*pi;
-    sf.targetRot((i-1)*40+19)=pi+rate*pi;
-    sf.targetRot((i-1)*40+22)=pi+rate*pi;
-    sf.targetRot((i-1)*40+23)=pi+rate*pi;
-
-    sf.targetRot((i-1)*40+36)=pi+rate*pi;
-    sf.targetRot((i-1)*40+37)=pi+rate*pi;
-
-    sf.targetRot((i-1)*40+34)=pi-rate*pi;
-    sf.targetRot((i-1)*40+35)=pi-rate*pi;
-    sf.targetRot((i-1)*40+38)=pi-rate*pi;
-    sf.targetRot((i-1)*40+39)=pi-rate*pi;
-
-    sf.targetRot((i-1)*40+28)=pi-rate*pi;
-    sf.targetRot((i-1)*40+29)=pi-rate*pi;
-
-    sf.targetRot((i-1)*40+26)=pi+rate*pi;
-    sf.targetRot((i-1)*40+27)=pi+rate*pi;
-    sf.targetRot((i-1)*40+30)=pi+rate*pi;
-    sf.targetRot((i-1)*40+31)=pi+rate*pi;
-    
+for i=1:size(barNodeMat,1)
+    n1=barNodeMat(i,1);
+    n2=barNodeMat(i,2);
+    len=norm(coords(n1,:)-coords(n2,:));
+    L_total=L_total+len;
 end
 
-Uhis=sf.Solve;
+W_bar=A_bar*L_total*rho_steel*9.81;   % unit:N
 
-toc
-plots.Plot_Deformed_Shape(squeeze(Uhis(end,:,:)))
-plots.fileName='Kirigami_Truss_Deploy.gif';
-plots.Plot_Deformed_His(Uhis(1:5:end,:,:))
+% c. Find total area of all CST elements
+A_cst_total=0;
+cstNodeMat=cst.node_ijk_mat;
+for i=1:size(cstNodeMat,1)
+    n1=cstNodeMat(i,1);
+    n2=cstNodeMat(i,2);
+    n3=cstNodeMat(i,3);
+    p1=coords(n1,:);
+    p2=coords(n2,:);
+    p3=coords(n3,:);
+    % Heron's formula for triangle area
+    a=norm(p1-p2);
+    b=norm(p2-p3);
+    c=norm(p3-p1);
+    s=(a+b+c)/2;
+    area = sqrt(s*(s-a)*(s-b)*(s-c));
+    A_cst_total = A_cst_total + area;
+end
 
+t_cst=panel_t; 
+W_cst=A_cst_total*t_cst*rho_steel*9.81;   % unit:N
+
+% self-weight
+W_total=W_bar+W_cst;
+
+fprintf('Total bar length: %.2f m\n', L_total);
+fprintf('Total CST area: %.2f m^2\n', A_cst_total);
+fprintf('Bar weight: %.2f N\n', W_bar);
+fprintf('CST weight: %.2f N\n', W_cst);
+fprintf('Total self-weight: %.2f N\n', W_total);
+
+
+%% Set up solver
+nr=Solver_NR_Loading;
+nr.assembly=assembly;
+
+nr.supp=[1 1 1 1;
+         2 1 1 1;
+         20*N+5 1 1 1;
+         20*N+6 1 1 1;];
+
+force=1000; 
+step=10;
+
+
+Uhis=[];
+for k=1:step
+    nr.load=[N*10+1,0,0,-force*k/4;
+             N*10+2,0,0,-force*k/4;
+             N*10+5,0,0,-force*k/4;
+             N*10+6,0,0,-force*k/4];
+    
+    nr.increStep=1;
+    nr.iterMax=20;
+    nr.tol=1*10^-5;
+
+    Uhis(k,:,:)=squeeze(nr.Solve());
+end
+
+plots.Plot_Deformed_Shape(squeeze(Uhis(end,:,:))*20)
+
+
+truss_strain=bar.Solve_Strain(node,squeeze(Uhis(end,:,:)));
+internal_force=(truss_strain).*(bar.E_vec).*(bar.A_vec);
+
+
+% Find the maximum bar internal force
+[maxBarForce,index]=max(abs(internal_force));
+
+
+% Find failure force for the bar
+sigma_u=300*10^6; % ultimate stress, 300 MPa
+barFailureForce=sigma_u*barA; % N
+
+
+% Find total bar length
+barLtotal=sum(bar.L0_vec);
+
+% Find Stiffness
+Uaverage=-mean(squeeze(Uhis(end,[N*10+1,N*10+2,N*10+5,N*10+6],3)));
+Kstiff=step*force/Uaverage;
+
+
+% Plot failure stress
+bar_stress=(truss_strain).*(bar.E_vec)*barFailureForce/maxBarForce;
+plots.Plot_Shape_Bar_Stress(bar_stress)
+
+
+
+% Find the relationship betweeen the bar internal forces and load
+loadatfail=force*step*barFailureForce/maxBarForce;
+fprintf('Failure load is %d kN \n',  loadatfail/1000);
+fprintf('Total bar length is %d m \n',  barLtotal);
+fprintf('Stiffness is %d N/m \n',  Kstiff);
+fprintf('Total bars: %d\n', barNum);
+
+loadEff=loadatfail/W_bar
+
+
+
+%% Evaluate Member
+AxialForce=internal_force(:); % N
+A=bar.A_vec(:); % m^2
+E=bar.E_vec(:); % Pa
+nb=numel(A);
+
+% 1) effective length KL
+if ~isfield(bar,'L0_vec')||isempty(bar.L0_vec)
+    L0_vec=zeros(nb,1);
+    for k=1:nb
+        n1=bar.node_ij_mat(k,1);
+        n2=bar.node_ij_mat(k,2);
+        L0_vec(k)=norm(assembly.node.coordinates_mat(n1,:) - ...
+                         assembly.node.coordinates_mat(n2,:));
+    end
+else
+    L0_vec=bar.L0_vec(:);
+end
+K =1.0;                
+Lc=K.*L0_vec;
+
+% 2) r, r = 0.5*sqrt(A/pi)
+r=0.5*sqrt(A./pi);
+r=max(r,1e-9); % prevent division by zero
+
+% 3) yield stress
+Fy=250e6;             % Pa（need to be changed）
+
+% 4) evaluate
+passYN=false(nb,1);
+util=NaN(nb,1);
+modeStr=cell(nb,1);
+Pn=NaN(nb,1);
+slender=NaN(nb,1);   % KL/r
+Fe=NaN(nb,1);   % Euler stress (Pa)
+Fcr=NaN(nb,1);   % Critical stress per AISC (Pa)
+
+tiny=1e-12;
+for i=1:nb
+    Ni=AxialForce(i);
+    Ai=A(i);
+    Ei=E(i);
+    Lci=Lc(i);
+    ri=r(i);
+
+    if Ni>0
+        % in tension 
+        Pn_i=Fy*Ai;
+        modeStr{i}='Tension-Yield';
+        slender(i)=NaN;  
+        Fe(i)=NaN; 
+        Fcr(i)=NaN;   % don't calculate buckling in tension
+    else
+        % in compression
+        slender=Lci/ri;
+        Fe=(pi^2*Ei)/(slender^2);
+        lambda_lim=4.71*sqrt(Ei/Fy);
+        if slender<=lambda_lim
+            Fcr=(0.658)^(Fy/Fe)*Fy;   % inelastic buckling
+        else
+            Fcr=0.877*Fe;             % elastic bukling
+        end
+        Pn_i=Fcr*Ai;
+        modeStr{i}='Compression-Buckling';
+    end
+
+    Pn(i)=Pn_i;
+    util(i)=abs(Ni)/max(Pn_i,tiny);
+    passYN(i)=util(i)<=1.0;
+end
+
+% 5) print
+fprintf('Bars passed: %d / %d\n', sum(passYN), nb);
+
+[util_sorted, idx]=sort(util, 'descend');
+topk=min(10, nb);
+fprintf('Worst %d bars (by utilization):\n', topk);
+for ii=1:topk
+    b=idx(ii);
+    fprintf('#%d: N=%.2f kN, util=%.3f, mode=%s, Pn=%.2f kN\n', ...
+        b, AxialForce(b)/1e3, util_sorted(ii), modeStr{b}, Pn(b)/1e3);
+end
 

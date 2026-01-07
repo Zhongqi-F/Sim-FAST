@@ -2,13 +2,13 @@ clear all;
 clc;
 close all;
 
-H=1;
-HA=1;
-W=1;
-L=1;
+H=2;
+HA=2;
+W=2;
+L=2;
 l=0.3;
 
-N=4;
+N=8;
 
 barA=0.01;
 barE=2*10^9;
@@ -67,7 +67,7 @@ plots=Plot_Truss_Rolling_Bridge();
 plots.assembly=assembly;
 
 % We will plot for the Rolling Bridge
-plots.displayRange=[-0.5;N+0.5;-0.5;1.5;-0.5;1.5]; 
+plots.displayRange=[-0.5;16.5;-0.5;2.5;-0.5;2.5]; 
 
 plots.viewAngle1=20;
 plots.viewAngle2=20;
@@ -320,3 +320,88 @@ fprintf('Stiffness is %d N/m \n',  Kstiff);
 fprintf('Normal bars: %d\n', barNum);
 fprintf('Actuator bars: %d\n', actBarNum);
 fprintf('Total bars: %d\n', barNum + actBarNum);
+
+
+
+%% Evaluate Member
+AxialForce=internal_force(:); % N
+A=bar.A_vec(:); % m^2
+E=bar.E_vec(:); % Pa
+nb=numel(A);
+
+% 1) effective length KL
+if ~isfield(bar,'L0_vec')||isempty(bar.L0_vec)
+    L0_vec=zeros(nb,1);
+    for k=1:nb
+        n1=bar.node_ij_mat(k,1);
+        n2=bar.node_ij_mat(k,2);
+        L0_vec(k)=norm(assembly.node.coordinates_mat(n1,:) - ...
+                         assembly.node.coordinates_mat(n2,:));
+    end
+else
+    L0_vec=bar.L0_vec(:);
+end
+K =1.0;                
+Lc=K.*L0_vec;
+
+% 2) r, r = 0.5*sqrt(A/pi)
+r=0.5*sqrt(A./pi);
+r=max(r,1e-9); % prevent division by zero
+
+% 3) yield stress
+Fy=250e6;             % Pa（need to be changed）
+
+% 4) evaluate
+passYN=false(nb,1);
+util=NaN(nb,1);
+modeStr=cell(nb,1);
+Pn=NaN(nb,1);
+slender=NaN(nb,1);   % KL/r
+Fe=NaN(nb,1);   % Euler stress (Pa)
+Fcr=NaN(nb,1);   % Critical stress per AISC (Pa)
+
+tiny=1e-12;
+for i=1:nb
+    Ni=AxialForce(i);
+    Ai=A(i);
+    Ei=E(i);
+    Lci=Lc(i);
+    ri=r(i);
+
+    if Ni>0
+        % in tension 
+        Pn_i=Fy*Ai;
+        modeStr{i}='Tension-Yield';
+        slender(i)=NaN;  
+        Fe(i)=NaN; 
+        Fcr(i)=NaN;   % don't calculate buckling in tension
+    else
+        % in compression
+        slender=Lci/ri;
+        Fe=(pi^2*Ei)/(slender^2);
+        lambda_lim=4.71*sqrt(Ei/Fy);
+        if slender<=lambda_lim
+            Fcr=(0.658)^(Fy/Fe)*Fy;   % inelastic buckling
+        else
+            Fcr=0.877*Fe;             % elastic bukling
+        end
+        Pn_i=Fcr*Ai;
+        modeStr{i}='Compression-Buckling';
+    end
+
+    Pn(i)=Pn_i;
+    util(i)=abs(Ni)/max(Pn_i,tiny);
+    passYN(i)=util(i)<=1.0;
+end
+
+% 5) print
+fprintf('Bars passed: %d / %d\n', sum(passYN), nb);
+
+[util_sorted, idx]=sort(util, 'descend');
+topk=min(10, nb);
+fprintf('Worst %d bars (by utilization):\n', topk);
+for ii=1:topk
+    b=idx(ii);
+    fprintf('#%d: N=%.2f kN, util=%.3f, mode=%s, Pn=%.2f kN\n', ...
+        b, AxialForce(b)/1e3, util_sorted(ii), modeStr{b}, Pn(b)/1e3);
+end
