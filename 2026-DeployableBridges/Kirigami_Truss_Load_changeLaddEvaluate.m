@@ -17,6 +17,7 @@ panel_E=200*10^9;
 panel_t=0.05;
 panel_v=0.2;
 
+
 node=Elements_Nodes;
 node.coordinates_mat=[node.coordinates_mat;
         -w, 0, 0; % 1
