@@ -181,6 +181,8 @@ rot_spr_4N.rot_spr_K_vec=ones(rotNum,1);
 plots.Plot_Shape_Node_Number;
 plots.Plot_Shape_Spr_Number;
 
+
+%% Initialize
 assembly.Initialize_Assembly;
 
 
@@ -240,4 +242,7 @@ Uhis=cat(1,Uhis1,Uhis2(1:10:end,:,:));
 plots.fileName='Origami_Bridge_Deploy.gif';
 plots.Plot_Deformed_His(Uhis(1:4:end,:,:))
 
-
+% store the deformation history
+save('OrigamiUhis.mat','Uhis'); % Saves to a .mat file
+UhisNew=load('OrigamiUhis.mat');
+UhisNew=UhisNew.Uhis;

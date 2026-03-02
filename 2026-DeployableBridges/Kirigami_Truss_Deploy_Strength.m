@@ -13,6 +13,12 @@ gap=0;
 % Number of Sections
 N=8;
 
+% Load the deformation history
+UhisNew=load('KirigamiUhis.mat');
+UhisNew=UhisNew.Uhis;
+DepRate=0.2; % 1 is fully deployed, 0 is compact
+DepStep=int32((1-DepRate)*1000);
+
 % The cross section of this bridge is:
 % HSS 4X3X5/16 A500 Grade C Fy=50ksi/200 GPa
 barA=0.0023; 
@@ -224,7 +230,7 @@ end
 rotNum=size(rot_spr_4N.node_ijkl_mat);
 rotNum=rotNum(1);
 
-rot_spr_4N.rot_spr_K_vec=10*ones(rotNum,1);
+rot_spr_4N.rot_spr_K_vec=(10^5)*ones(rotNum,1);
 
 plots.Plot_Shape_Node_Number;
 plots.Plot_Shape_Spr_Number;
@@ -251,71 +257,158 @@ plots.Plot_Shape_RotSpr_3N_Number()
 
 
 %% Initialize Assembly 
+node.coordinates_mat=node.coordinates_mat+squeeze(UhisNew(DepStep,:,:));
 assembly.Initialize_Assembly;
 
 
 
-%% Set up solver
-sf=Solver_NR_Folding_4N;
-sf.assembly=assembly;
+%% Calculate self-weight 
 
-sf.supp=[1 1 1 1;
+% Steel properties
+rho_steel=7850;         % Density of steel in kg/m^3
+g=9.81;                 % Gravitational acceleration in m/s^2
+
+% Bar elements
+A_bar=barA;             % Cross-sectional area of bars in m^2 (matches bar.A_vec)
+
+% Calculate total length of all bars
+L_total=0;
+barNodeMat=bar.node_ij_mat;
+coords=node.coordinates_mat;
+
+for i=1:size(barNodeMat,1)
+    n1=barNodeMat(i,1);
+    n2=barNodeMat(i,2);
+    p1=coords(n1,:);
+    p2=coords(n2,:);
+    len=norm(p1-p2);
+    L_total=L_total+len;
+end
+
+% Total bar weight (Newtons)
+W_bar=A_bar*L_total*rho_steel*g;   
+
+
+%% Set up solver + Distributed load on bottom nodes (full-length)
+nr=Solver_NR_Loading;
+nr.assembly=assembly;
+
+nodeNum=size(node.coordinates_mat,1);
+nodeNumVec=(1:nodeNum)';
+
+nr.supp=[1 1 1 1;
          2 1 1 1;
          3 1 1 1;
          4 1 1 1;];
 
-sf.targetRot=rot_spr_4N.theta_stress_free_vec;
 
-sf.increStep=1000;
-sf.iterMax=30;
-sf.tol=1*10^-4;
 
-rate=0.9;
+for i=1:50
 
-for i=1:N
-    sf.targetRot((i-1)*24+1)=pi+rate*pi;
-    sf.targetRot((i-1)*24+2)=pi+rate*pi;
+    % Nonlinear solver settings
+    nr.increStep=1;
+    nr.iterMax=50;
+    nr.tol=1e-5; 
 
-    sf.targetRot((i-1)*24+3)=pi-rate*pi;
-    sf.targetRot((i-1)*24+4)=pi-rate*pi;
-    sf.targetRot((i-1)*24+5)=pi-rate*pi;
-    sf.targetRot((i-1)*24+6)=pi-rate*pi;
+    % Apply self weight to the bridge
+    nodeNum=size(node.coordinates_mat,1);
+    force=W_bar/nodeNum/50*i;
 
-    sf.targetRot((i-1)*24+7)=pi-rate*pi;
-    sf.targetRot((i-1)*24+8)=pi-rate*pi;
+    nr.load=[(1:nodeNum)'  zeros(nodeNum,1)...
+        zeros(nodeNum,1)   -force*ones(nodeNum,1)];
 
-    sf.targetRot((i-1)*24+9)=pi+rate*pi;
-    sf.targetRot((i-1)*24+10)=pi+rate*pi;
-    sf.targetRot((i-1)*24+11)=pi+rate*pi;
-    sf.targetRot((i-1)*24+12)=pi+rate*pi;
-
-    sf.targetRot((i-1)*24+13)=pi-rate*pi;
-    sf.targetRot((i-1)*24+14)=pi-rate*pi;
-
-    sf.targetRot((i-1)*24+15)=pi+rate*pi;
-    sf.targetRot((i-1)*24+16)=pi+rate*pi;
-    sf.targetRot((i-1)*24+17)=pi+rate*pi;
-    sf.targetRot((i-1)*24+18)=pi+rate*pi;
-
-    sf.targetRot((i-1)*24+19)=pi+rate*pi;
-    sf.targetRot((i-1)*24+20)=pi+rate*pi;
-
-    sf.targetRot((i-1)*24+21)=pi-rate*pi;
-    sf.targetRot((i-1)*24+22)=pi-rate*pi;
-    sf.targetRot((i-1)*24+23)=pi-rate*pi;
-    sf.targetRot((i-1)*24+24)=pi-rate*pi;
+    total_F=nodeNum*force;
     
+    % Solve
+    Uhis=nr.Solve;
+              
+    %% Evaluate if member is failing
+    % Deformation
+    U_end=squeeze(Uhis(end,:,:));   % [nodeNum x 3]
+    
+    % strain in each bar
+    truss_strain=bar.Solve_Strain(node, U_end); 
+
+    % axial force in each bar (N)
+    internal_force=truss_strain.*(bar.E_vec).*(bar.A_vec); 
+
+    barNum=numel(internal_force);
+    
+    % effective length KL
+    L0_vec=bar.L0_vec(:);
+    K=1.0;                
+    Lc=K.*L0_vec;
+    
+    % find r value: r = sqrt(I/A)
+    r=sqrt(I/barA)*ones(barNum);
+    
+    % yield stress
+    Fy=345*10^6;  % Q345 steel or Grade50 (345MPa,50ksi)
+    
+    % pass = 1 means member is not failing
+    passYN=false(barNum,1);
+
+    % Critical Stress Ratio
+    StressRatio=NaN(barNum,1);
+
+    % Failure mode
+    modeStr=cell(barNum,1);
+
+    % critical failure load
+    Pn=NaN(barNum,1);
+
+    % slenderness ratio: KL/r
+    slender=NaN(barNum,1);   
+
+    % Euler stress (Pa)
+    Fe=NaN(barNum,1);   
+
+    % Critical stress requirement from AISC (Pa)
+    Fcr=NaN(barNum,1);   
+
+    for k=1:barNum
+        Ni=internal_force(k);
+        Ai=bar.A_vec(k);
+        Ei=bar.E_vec(k);
+        Lci=Lc(k);
+        ri=r(k);
+
+        % Use the AISC to check the member failure
+        [passi,modeStri,Pni,stressRatioi]=Check_Truss_AISC(Ni,Ai,Ei,Lci,ri,Fy);
+    
+        modeStr{k}=modeStri;
+        Pn(k)=Pni;
+        StressRatio(k)=stressRatioi;
+        passYN(k)=passi;
+    end
+    
+    if max(StressRatio)<1
+        fprintf('All Truss Safe \n');
+    else
+        fprintf('Failure Detected \n');
+        break
+    end
+
 end
 
-Uhis=sf.Solve;
 
-toc
-plots.Plot_Deformed_Shape(squeeze(Uhis(end,:,:)))
-plots.fileName='Kirigami_Truss_Deploy.gif';
-plots.Plot_Deformed_His(Uhis(1:20:end,:,:))
+% Find Stiffness
+Uaverage=-mean(squeeze(Uhis(end,[129,130],3)));
 
+% Output results
+fprintf('-----------------------------\n');
+fprintf('Total length of all bars: %.2f m\n', L_total);
+fprintf('Total bar weight: %.2f N\n', W_bar);
+fprintf('Maximum stress ratio: %.2f \n', max(StressRatio));
+fprintf('Tip deflection: %.2f \n', Uaverage);
+fprintf('-----------------------------\n');
 
-% store the deformation history
-save('KirigamiUhis.mat','Uhis'); % Saves to a .mat file
-UhisNew=load('KirigamiUhis.mat');
-UhisNew=UhisNew.Uhis;
+% Plot the bar stress
+truss_stress=truss_strain.*(bar.E_vec);
+plots.Plot_Shape_Bar_Stress(truss_stress);
+
+% Plot failed bar stress
+plots.Plot_Shape_Bar_Failure(passYN);
+
+% Plot deformed shape
+plots.Plot_Deformed_Shape(squeeze(Uhis(end,:,:)));
