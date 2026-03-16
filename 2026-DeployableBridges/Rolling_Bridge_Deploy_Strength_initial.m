@@ -15,6 +15,12 @@ L=2; % meter
 % Number of Sections
 N=8;
 
+% Load the deformation history
+UhisNew=load('RollingUhis.mat');
+UhisNew=UhisNew.Uhis;
+DepRate=0.2; % 1 is fully deployed, 0 is compact
+DepStep=int32((1-DepRate)*800);
+
 % The cross section of this bridge is:
 % HSS 4X3X5/16 A500 Grade C Fy=50ksi/200 GPa
 barA=0.0023; 
@@ -87,7 +93,7 @@ plots=Plot_Rolling_Bridge();
 plots.assembly=assembly;
 
 % We will plot for the Rolling Bridge
-plots.displayRange=[-0.5;2*N+0.5;-0.5;2.5;-0.5;2.5]; 
+plots.displayRange=[-2;18;-1;3;-1;14]; 
 plots.viewAngle1=20;
 plots.viewAngle2=20;
 
@@ -255,6 +261,7 @@ plots.Plot_Shape_Spr_Number;
 
 
 %% Initialize the entire assembly 
+node.coordinates_mat=node.coordinates_mat+squeeze(UhisNew(DepStep,:,:));
 assembly.Initialize_Assembly();
 
 
@@ -305,6 +312,8 @@ W_bar=A_bar*L_total*rho_steel*g;
 
 
 %% Distributed load along full length on bridge bottom
+
+
 nr=Solver_NR_Loading;
 nr.assembly=assembly;
 
@@ -316,28 +325,26 @@ nr.assembly=assembly;
 nr.supp=[nodeNumVec,zeros(nodeNum,1),zeros(nodeNum,1),zeros(nodeNum,1)];
 nr.supp(1,2:4)=ones(1,3);
 nr.supp(4,2:4)=ones(1,3);
-nr.supp(45,2:4)=ones(1,3);
-nr.supp(47,2:4)=ones(1,3);
-
-% force increment of each node per node
-force=1000;   % N
+nr.supp(3,2:4)=ones(1,3);
+nr.supp(5,2:4)=ones(1,3);
 
 
-for i=1:100
+
+for i=1:5
 
     % Nonlinear solver settings
     nr.increStep=1;
     nr.iterMax=50;
     nr.tol=1e-5;    
 
-    nr.load=[];
-    total_F=0;
-    for k=1:N-1
-        nr.load=[nr.load;
-            6*(k-1)+3 0 0 -force*i;
-            6*(k-1)+5 0 0 -force*i;];
-        total_F=force*2*i+total_F;
-    end
+    % Apply self weight to the bridge
+    nodeNum=size(node.coordinates_mat,1);
+    force=W_bar/nodeNum/5*i;
+
+    nr.load=[(1:nodeNum)'  zeros(nodeNum,1)...
+        zeros(nodeNum,1)   -force*ones(nodeNum,1)];
+
+    total_F=nodeNum*force;
     
     % Solve
     Uhis=nr.Solve;
@@ -415,18 +422,14 @@ for i=1:100
 end
 
 % Find Stiffness
-Uaverage=-mean(squeeze(Uhis(end,[3*N-3,3*N-1],3)));
-Kstiff=total_F/Uaverage;
+Uaverage=-mean(squeeze(Uhis(end,[45,47],3)));
 
 % Output results
 fprintf('-----------------------------\n');
 fprintf('Total length of all bars: %.2f m\n', L_total);
 fprintf('Total bar weight: %.2f N\n', W_bar);
-fprintf('Failure load is: %.2f N\n', total_F);
-fprintf('Mid-span deflection at failure is: %.3f m\n', Uaverage);
-fprintf('Stiffness is: %.2f m\n', Kstiff);
-fprintf('span/disp at failure is: %.2f \n', 16/Uaverage);
-fprintf('capacity/weight: %.2f \n', total_F/W_bar);
+fprintf('Maximum stress ratio: %.2f \n', max(StressRatio));
+fprintf('Tip deflection: %.2f \n', Uaverage);
 fprintf('-----------------------------\n');
 
 % Plot the bar stress

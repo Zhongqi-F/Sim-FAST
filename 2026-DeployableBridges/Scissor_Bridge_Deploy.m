@@ -2,6 +2,8 @@ clear all;
 clc;
 close all;
 
+cd('G:\My Drive\Dr. Zhu\Code\Sim-FAST\2026-DeployableBridges');
+
 %% Initialize the scissor 
 % Number of Sections
 N=8;
@@ -286,11 +288,11 @@ for step=1:2000
     else
         dL=0.001*200+0.0004*(400-200)+0.0001*(step-400);
     end
-    
+
     for i=1:actBarNum1
         ta.targetL0(i)=base_L0(i)+dL;
     end
-    
+
     theta=acos((L+dL)/sqrt(2)/L );
     L2=L/sqrt(2)*sin(theta);
     L3 = sqrt((L/2)^2-L2^2);
@@ -298,18 +300,66 @@ for step=1:2000
     for i=(actBarNum1+1):actBarNum
         ta.targetL0(i)=base_L0(i)+dL/2-L3;
     end
-    
+
     ta.iterMax = 40;
     ta.tol = 10^-4;
-    
+
     Utemp = ta.Solve();  
     Uhis(step,:,:)=squeeze(Utemp);
 
     a=1;
 end
+% 
+% 
+% plots.Plot_Deformed_Shape(squeeze(Uhis(end,:,:)))
+% plots.fileName = 'Scissor_Bridge_Deploy.gif';
+% plots.Plot_Deformed_His(Uhis(1:20:end,:,:));
+% 
+% % store the deformation history
+% save('ScissorUhis.mat','Uhis'); % Saves to a .mat file
+% U_end = squeeze(Uhis(end, :, :));  
+% plots.Plot_Deformed_Shape(U_end);
+% 
+% base_L0=actBar.L0_vec; 
+% ta.targetL0=base_L0;
+% 
+% % dL_final: total actuator elongation at full deployment (same as 2000-step schedule)
+% dL_final = 0.001*200 + 0.0004*200 + 0.0001*1600;  % = 0.44 m
+% 
+% for step=1:300
+% 
+%     ta.increStep = 1;
+% 
+%     % Linear ramp across 10 steps to reach the same final dL
+%     dL = dL_final / 300 * step;
+% 
+%     for i=1:actBarNum1
+%         ta.targetL0(i)=base_L0(i)+dL;
+%     end
+% 
+%     theta=acos((L+dL)/sqrt(2)/L );
+%     L2=L/sqrt(2)*sin(theta);
+%     L3 = sqrt((L/2)^2-L2^2);
+% 
+%     for i=(actBarNum1+1):actBarNum
+%         ta.targetL0(i)=base_L0(i)+dL/2-L3;
+%     end
+% 
+%     ta.iterMax = 40;
+%     ta.tol = 10^-4;
+% 
+%     Utemp = ta.Solve();  
+%     Uhis(step,:,:)=squeeze(Utemp);
+% 
+%     a=1;
+% end
 
 plots.fileName = 'Scissor_Bridge_Deploy.gif';
 plots.Plot_Deformed_His(Uhis(1:20:end,:,:));
-
 U_end = squeeze(Uhis(end, :, :));  
 plots.Plot_Deformed_Shape(U_end);
+
+% Store the deformation history
+save('ScissorUhis.mat', 'Uhis');
+UhisNew=load('ScissorUhis.mat');
+UhisNew=UhisNew.Uhis;

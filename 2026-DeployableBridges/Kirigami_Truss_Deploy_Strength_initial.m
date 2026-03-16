@@ -13,6 +13,12 @@ gap=0;
 % Number of Sections
 N=8;
 
+% Load the deformation history
+UhisNew=load('KirigamiUhis.mat');
+UhisNew=UhisNew.Uhis;
+DepRate=0.2; % 1 is fully deployed, 0 is compact
+DepStep=int32((1-DepRate)*1000);
+
 % The cross section of this bridge is:
 % HSS 4X3X5/16 A500 Grade C Fy=50ksi/200 GPa
 barA=0.0023; 
@@ -224,7 +230,7 @@ end
 rotNum=size(rot_spr_4N.node_ijkl_mat);
 rotNum=rotNum(1);
 
-rot_spr_4N.rot_spr_K_vec=(10^8)*ones(rotNum,1);
+rot_spr_4N.rot_spr_K_vec=(10^5)*ones(rotNum,1);
 
 plots.Plot_Shape_Node_Number;
 plots.Plot_Shape_Spr_Number;
@@ -251,6 +257,7 @@ plots.Plot_Shape_RotSpr_3N_Number()
 
 
 %% Initialize Assembly 
+node.coordinates_mat=node.coordinates_mat+squeeze(UhisNew(DepStep,:,:));
 assembly.Initialize_Assembly;
 
 
@@ -291,30 +298,26 @@ nodeNumVec=(1:nodeNum)';
 
 nr.supp=[1 1 1 1;
          2 1 1 1;
-         16*N+1 1 1 1;
-         16*N+2 1 1 1;];
-
-% force increment of each node per node
-force=4000;   % N
+         3 1 1 1;
+         4 1 1 1;];
 
 
-for i=1:100
+
+for i=1:50
 
     % Nonlinear solver settings
     nr.increStep=1;
     nr.iterMax=50;
     nr.tol=1e-5; 
 
-    nr.load=[];
-    total_F=0;
+    % Apply self weight to the bridge
+    nodeNum=size(node.coordinates_mat,1);
+    force=W_bar/nodeNum/50*i;
 
-    for k=1:N-1
-        nr.load=[nr.load;
-            17+(k-1)*16 0 0 -force*i;
-            18+(k-1)*16 0 0 -force*i;
-            ];
-        total_F=force*2*i+total_F;
-    end
+    nr.load=[(1:nodeNum)'  zeros(nodeNum,1)...
+        zeros(nodeNum,1)   -force*ones(nodeNum,1)];
+
+    total_F=nodeNum*force;
     
     % Solve
     Uhis=nr.Solve;
@@ -390,18 +393,14 @@ end
 
 
 % Find Stiffness
-Uaverage=-mean(squeeze(Uhis(end,[3*N-3,3*N-1],3)));
-Kstiff=total_F/Uaverage;
+Uaverage=-mean(squeeze(Uhis(end,[129,130],3)));
 
 % Output results
 fprintf('-----------------------------\n');
 fprintf('Total length of all bars: %.2f m\n', L_total);
 fprintf('Total bar weight: %.2f N\n', W_bar);
-fprintf('Failure load is: %.2f N\n', total_F);
-fprintf('Mid-span deflection at failure is: %.3f m\n', Uaverage);
-fprintf('Stiffness is: %.2f N/m\n', Kstiff);
-fprintf('span/disp at failure is: %.2f \n', 16/Uaverage);
-fprintf('capacity/weight: %.2f \n', total_F/W_bar);
+fprintf('Maximum stress ratio: %.2f \n', max(StressRatio));
+fprintf('Tip deflection: %.2f \n', Uaverage);
 fprintf('-----------------------------\n');
 
 % Plot the bar stress
@@ -410,3 +409,6 @@ plots.Plot_Shape_Bar_Stress(truss_stress);
 
 % Plot failed bar stress
 plots.Plot_Shape_Bar_Failure(passYN);
+
+% Plot deformed shape
+plots.Plot_Deformed_Shape(squeeze(Uhis(end,:,:)));
