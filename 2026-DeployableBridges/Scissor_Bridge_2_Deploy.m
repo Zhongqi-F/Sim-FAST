@@ -1,6 +1,7 @@
 clear all;
 clc;
 close all;
+cd('G:\My Drive\Dr. Zhu\Code\Sim-FAST\2026-DeployableBridges');
 
 %% Initialize the scissor 
 % Number of Sections
@@ -301,3 +302,10 @@ plots.Plot_Deformed_His(Uhis(1:10:end,:,:));
 
 U_end = squeeze(Uhis(end, :, :));  
 plots.Plot_Deformed_Shape(U_end);
+
+
+
+% Store the deformation history
+save('ScissorUhis2.mat', 'Uhis');
+UhisNew=load('ScissorUhis2.mat');
+UhisNew=UhisNew.Uhis;

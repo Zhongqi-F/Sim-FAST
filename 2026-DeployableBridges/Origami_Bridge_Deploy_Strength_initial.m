@@ -16,6 +16,13 @@ H=2;
 % Number of Sections
 N=4;
 
+
+% Load the deformation history
+UhisNew=load('OrigamiUhis.mat');
+UhisNew=UhisNew.Uhis;
+DepRate=0.7; % 1 is fully deployed, 0 is compact
+DepStep=int32((1-DepRate)*300);
+
 % HSS 4X3X5/16 A500 Grade C Fy=50ksi
 barA=0.0023; % 3.52 in^2
 barE=2*10^11;
@@ -187,6 +194,8 @@ rot_spr_4N.rot_spr_K_vec=ones(rotNum,1)*10^8;
 plots.Plot_Shape_Node_Number;
 plots.Plot_Shape_Spr_Number;
 
+%% Initialize 
+node.coordinates_mat=node.coordinates_mat+squeeze(UhisNew(DepStep,:,:));
 assembly.Initialize_Assembly;
 
 
@@ -223,29 +232,24 @@ nr=Solver_NR_Loading;
 nr.assembly=assembly;
 
 nr.supp=[nr.supp;
+     1      1 1 1;
      2      1 1 1;
-     3      1 1 1;
-     N*9+2  1 1 1;
-     N*9+3  1 1 1;];
+     3  1 1 1;
+     4  1 1 1;];
 
 
-% force increment of each node per node
-force=1000;   % N
-
-
-for i=1:100
+for i=1:5
 
     nr.load=[];
-    total_F=0;
-    for k=1:N
-        nr.load=[nr.load;
-            6+(k-1)*9 0 0 -force*i;
-            8+(k-1)*9 0 0 -force*i;
-            11+(k-1)*9 0 0 -force*i;
-            12+(k-1)*9 0 0 -force*i;
-            ];
-        total_F=force*4*i+total_F;
-    end
+
+    % Apply self weight to the bridge
+    nodeNum=size(node.coordinates_mat,1);
+    force=W_bar/nodeNum/5*i;
+
+    nr.load=[(1:nodeNum)'  zeros(nodeNum,1)...
+        zeros(nodeNum,1)   -force*ones(nodeNum,1)];
+
+    total_F=nodeNum*force;
 
     nr.increStep=1;
     nr.iterMax=20;
@@ -325,18 +329,14 @@ for i=1:100
 end
 
 % Find Stiffness
-Uaverage=-mean(squeeze(Uhis(end,[3*N-3,3*N-1],3)));
-Kstiff=total_F/Uaverage;
+Uaverage=-mean(squeeze(Uhis(end,[38,39],3)));
 
 % Output results
 fprintf('-----------------------------\n');
 fprintf('Total length of all bars: %.2f m\n', L_total);
 fprintf('Total bar weight: %.2f N\n', W_bar);
-fprintf('Failure load is: %.2f N\n', total_F);
-fprintf('Mid-span deflection at failure is: %.3f m\n', Uaverage);
-fprintf('Stiffness is: %.2f N/m\n', Kstiff);
-fprintf('span/disp at failure is: %.2f \n', 16/Uaverage);
-fprintf('capacity/weight: %.2f \n', total_F/W_bar);
+fprintf('Maximum stress ratio: %.2f \n', max(StressRatio));
+fprintf('Tip deflection: %.2f \n', Uaverage);
 fprintf('-----------------------------\n');
 
 % Plot the bar stress

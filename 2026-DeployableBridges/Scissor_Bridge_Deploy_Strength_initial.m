@@ -12,6 +12,9 @@ H=2; % (m)
 % Length of the section
 L=2; % (m)
 
+% Deployment Ratio
+DepRate=0.2; % 1 is fully deployed, 0 is compact
+
 % HSS 4X3X5/16 A500 Grade C Fy=50ksi
 barA=0.0023; % 3.52 in^2
 barE=2*10^11;
@@ -26,7 +29,7 @@ panel_t=0.01;
 panel_v=0.3;
 
 % The three-node rotational spring stiffness
-barL=sqrt(H^2+L^2);
+barL=sqrt(H^2+L^2)/2;
 kspr=barE*I/barL;
 
 
@@ -50,28 +53,34 @@ assembly.actBar=actBar;
 
 
 %% Define the nodal coordinates
+
+theta=pi/4*DepRate;
+dL=L*sqrt(2)*cos(theta)-L;
+L2=L/sqrt(2)*sin(theta);
+L3 = sqrt((L/2)^2-L2^2);
+
+
 for i=1:N
     node.coordinates_mat=[node.coordinates_mat;
-        L*(i-1), 0, 0;
-        L*(i-1), L, 0;
-        L*(i-1), 0, L;
-        L*(i-1), L, L;
+        2*L2*(i-1), 0, 0;
+        2*L2*(i-1), L, 0;
+        2*L2*(i-1), 0, L+dL;
+        2*L2*(i-1), L, L+dL;
 
-        (i-1)*L+L/2, 0, L/2;
-        (i-1)*L+L/2, L, L/2;
-        (i-1)*L+L/2, 0, 0;
-        (i-1)*L+L/2, L, 0; 
+        (i-1)*2*L2+L2, 0, (L+dL)/2;
+        (i-1)*2*L2+L2, L, (L+dL)/2;
+
+        (i-1)*2*L2+L2, 0, L3;
+        (i-1)*2*L2+L2, L, L3; 
            
-        (i-1)*L+L/2, 0, L;
-        (i-1)*L+L/2, L, L;
         ];
 end
 
 node.coordinates_mat=[node.coordinates_mat;
-        L*N, 0, 0;
-        L*N, L, 0;
-        L*N, 0, L;
-        L*N, L, L;
+        2*L2*N, 0, 0;
+        2*L2*N, L, 0;
+        2*L2*N, 0, L+dL;
+        2*L2*N, L, L+dL;
         ];
 
 
@@ -90,10 +99,10 @@ plots.Plot_Shape_Node_Number;
 %% Define Triangle
 for i=1:N
     cst.node_ijk_mat=[cst.node_ijk_mat;
-        10*(i-1)+1  10*(i-1)+2  10*(i-1)+7;
-        10*(i-1)+2  10*(i-1)+7 10*(i-1)+8;
-        10*(i-1)+7 10*(i-1)+8 10*(i-1)+11;
-        10*(i-1)+8 10*(i-1)+12 10*(i-1)+11;
+        8*(i-1)+1  8*(i-1)+2  8*(i-1)+7;
+        8*(i-1)+2  8*(i-1)+7 8*(i-1)+8;
+        8*(i-1)+7 8*(i-1)+8 8*(i-1)+9;
+        8*(i-1)+8 8*(i-1)+10 8*(i-1)+9;
     ];
 end
 
@@ -110,44 +119,36 @@ plots.Plot_Shape_CST_Number;
 for i=1:N
     bar.node_ij_mat=[
         bar.node_ij_mat;
-        10*(i-1)+1   10*(i-1)+7;
-        10*(i-1)+7   10*(i-1)+11;
-        10*(i-1)+2   10*(i-1)+8;
-        10*(i-1)+8   10*(i-1)+12;
+        8*(i-1)+1   8*(i-1)+7;
+        8*(i-1)+7   8*(i-1)+9;
+        8*(i-1)+2   8*(i-1)+8;
+        8*(i-1)+8   8*(i-1)+10;
 
-        10*(i-1)+3   10*(i-1)+9;
-        10*(i-1)+9   10*(i-1)+13;
-        10*(i-1)+4   10*(i-1)+10;
-        10*(i-1)+10   10*(i-1)+14;
+        8*(i-1)+3   8*(i-1)+4;
+        8*(i-1)+9   8*(i-1)+10;
+        8*(i-1)+1   8*(i-1)+2;
+        8*(i-1)+7   8*(i-1)+8;
 
-        10*(i-1)+3   10*(i-1)+4;
-        10*(i-1)+9   10*(i-1)+10;
+        8*(i-1)+1  8*(i-1)+5;
+        8*(i-1)+3  8*(i-1)+5;
+        8*(i-1)+2  8*(i-1)+6;
+        8*(i-1)+4  8*(i-1)+6;  
 
-        10*(i-1)+1   10*(i-1)+2;
-        10*(i-1)+7   10*(i-1)+8;
+        8*(i-1)+5  8*(i-1)+9;
+        8*(i-1)+5  8*(i-1)+11;
+        8*(i-1)+6  8*(i-1)+10;
+        8*(i-1)+6  8*(i-1)+12;
 
-        10*(i-1)+1  10*(i-1)+5;
-        10*(i-1)+3  10*(i-1)+5;
-        10*(i-1)+2  10*(i-1)+6;
-        10*(i-1)+4  10*(i-1)+6;  
-        10*(i-1)+5  10*(i-1)+13;
-        10*(i-1)+5  10*(i-1)+11;
-        10*(i-1)+6  10*(i-1)+12;
-        10*(i-1)+6  10*(i-1)+14;  
-
-        10*(i-1)+3  10*(i-1)+10;
-        10*(i-1)+13  10*(i-1)+10;
-
-        10*(i-1)+2  10*(i-1)+7;
-        10*(i-1)+8  10*(i-1)+11;
+        8*(i-1)+2  8*(i-1)+7;
+        8*(i-1)+8  8*(i-1)+9;
         ];
 end
 
 i=N+1;
 bar.node_ij_mat=[
     bar.node_ij_mat;
-    10*(i-1)+1  10*(i-1)+2;
-    10*(i-1)+3  10*(i-1)+4;     
+    8*(i-1)+1  8*(i-1)+2;
+    8*(i-1)+3  8*(i-1)+4;     
     ];
 
 barNum=size(bar.node_ij_mat);
@@ -163,31 +164,26 @@ plots.Plot_Shape_Bar_Number();
 %% Define 3 Node Rotational Spring
 for i=1:N    
     rotSpr3N.node_ijk_mat = [rotSpr3N.node_ijk_mat;
-         10*(i-1)+1  10*(i-1)+5  10*(i-1)+13;
-         10*(i-1)+3  10*(i-1)+5  10*(i-1)+11;
-         10*(i-1)+2  10*(i-1)+6  10*(i-1)+14;
-         10*(i-1)+4  10*(i-1)+6  10*(i-1)+12;
+         8*(i-1)+1  8*(i-1)+5  8*(i-1)+11;
+         8*(i-1)+3  8*(i-1)+5  8*(i-1)+9;
+         8*(i-1)+2  8*(i-1)+6  8*(i-1)+12;
+         8*(i-1)+4  8*(i-1)+6  8*(i-1)+10;
 
-         10*(i-1)+4  10*(i-1)+3  10*(i-1)+5;
-         10*(i-1)+3  10*(i-1)+4  10*(i-1)+6;
-         10*(i-1)+2  10*(i-1)+1  10*(i-1)+5;
-         10*(i-1)+6  10*(i-1)+2  10*(i-1)+1;
+         8*(i-1)+4  8*(i-1)+3  8*(i-1)+5;
+         8*(i-1)+3  8*(i-1)+4  8*(i-1)+6;
+         8*(i-1)+2  8*(i-1)+1  8*(i-1)+5;
+         8*(i-1)+6  8*(i-1)+2  8*(i-1)+1;
 
-         10*(i-1)+5  10*(i-1)+11  10*(i-1)+12;
-         10*(i-1)+11  10*(i-1)+12  10*(i-1)+6;
-         10*(i-1)+5  10*(i-1)+13  10*(i-1)+14;
-         10*(i-1)+13  10*(i-1)+14  10*(i-1)+6;
-
-         10*(i-1)+11  10*(i-1)+13  10*(i-1)+14;
-         10*(i-1)+13  10*(i-1)+14  10*(i-1)+12;
-         10*(i-1)+14  10*(i-1)+12  10*(i-1)+11;
-         10*(i-1)+12  10*(i-1)+11  10*(i-1)+13;
+         8*(i-1)+5  8*(i-1)+11  8*(i-1)+12;
+         8*(i-1)+11  8*(i-1)+12  8*(i-1)+6;
+         8*(i-1)+5  8*(i-1)+9  8*(i-1)+10;
+         8*(i-1)+9  8*(i-1)+10  8*(i-1)+6;
 
          ];
 end
 
 rotNum=size(rotSpr3N.node_ijk_mat,1);
-rotSpr3N.rot_spr_K_vec=kspr*ones(rotNum,1)*100;
+rotSpr3N.rot_spr_K_vec=kspr*ones(rotNum,1);
 
 plots.Plot_Shape_Node_Number;
 plots.Plot_Shape_RotSpr_3N_Number;
@@ -197,11 +193,8 @@ plots.Plot_Shape_RotSpr_3N_Number;
 %% Set up four node rotational spring
 for i=1:N    
     rotSpr4N.node_ijkl_mat = [rotSpr4N.node_ijkl_mat;
-         10*(i-1)+1   10*(i-1)+2   10*(i-1)+7  10*(i-1)+8;
-         10*(i-1)+7  10*(i-1)+8  10*(i-1)+11  10*(i-1)+12;
-
-         10*(i-1)+4   10*(i-1)+3   10*(i-1)+10  10*(i-1)+9;
-         10*(i-1)+10  10*(i-1)+9  10*(i-1)+14  10*(i-1)+13;
+         8*(i-1)+1   8*(i-1)+2   8*(i-1)+7  8*(i-1)+8;
+         8*(i-1)+7  8*(i-1)+8  8*(i-1)+9  8*(i-1)+10;
          ];
 end
 
@@ -219,16 +212,16 @@ actBar.node_ij_mat=[];
 for i=1:N
     actBar.node_ij_mat=[
         actBar.node_ij_mat;
-        10*(i-1)+1 10*(i-1)+3;
-        10*(i-1)+2 10*(i-1)+4;
+        8*(i-1)+1 8*(i-1)+3;
+        8*(i-1)+2 8*(i-1)+4;
         ];
 end
 
 i=N+1;
 actBar.node_ij_mat=[
     actBar.node_ij_mat;
-    10*(i-1)+1 10*(i-1)+3;
-    10*(i-1)+2 10*(i-1)+4;
+    8*(i-1)+1 8*(i-1)+3;
+    8*(i-1)+2 8*(i-1)+4;
     ];
 
 actBarNum1=size(actBar.node_ij_mat,1);
@@ -236,10 +229,8 @@ actBarNum1=size(actBar.node_ij_mat,1);
 for i=1:N
     actBar.node_ij_mat=[
         actBar.node_ij_mat;
-        10*(i-1)+7 10*(i-1)+5;
-        10*(i-1)+5 10*(i-1)+9;
-        10*(i-1)+6 10*(i-1)+10;
-        10*(i-1)+8 10*(i-1)+6;
+        8*(i-1)+7 8*(i-1)+5;
+        8*(i-1)+8 8*(i-1)+6;
         ];
 end
 
@@ -293,15 +284,13 @@ nodeNumVec=(1:nodeNum)';
 
 nr.supp = [1    1 1 1;
            2    1 1 1;
-           10*N+1    0 1 1; 
-           10*N+2    0 1 1; 
+           3    1 1 1; 
+           4    1 1 1; 
            ];
 
-% force increment of each node per node
-force=2000;   % N
 
 
-for i=1:100
+for i=1:5
 
     % Nonlinear solver settings
     nr.increStep=1;
@@ -309,13 +298,15 @@ for i=1:100
     nr.tol=1e-5;  
 
     nr.load=[];
-    total_F=0;
-    for k=1:N-1
-        nr.load=[nr.load;
-            10*(k-1)+1 0 0 -force*i;
-            10*(k-1)+2 0 0 -force*i;];
-        total_F=force*2*i+total_F;
-    end
+
+    % Apply self weight to the bridge
+    nodeNum=size(node.coordinates_mat,1);
+    force=W_bar/nodeNum/5*i;
+
+    nr.load=[(1:nodeNum)'  zeros(nodeNum,1)...
+        zeros(nodeNum,1)   -force*ones(nodeNum,1)];
+
+    total_F=nodeNum*force;
     
     % Solve
     Uhis=nr.Solve;
@@ -391,19 +382,16 @@ end
 
 
 % Find Stiffness
-Uaverage=-mean(squeeze(Uhis(end,[3*N-3,3*N-1],3)));
-Kstiff=total_F/Uaverage;
+Uaverage=-mean(squeeze(Uhis(end,[65,66],3)));
 
 % Output results
 fprintf('-----------------------------\n');
 fprintf('Total length of all bars: %.2f m\n', L_total);
 fprintf('Total bar weight: %.2f N\n', W_bar);
-fprintf('Failure load is: %.2f N\n', total_F);
-fprintf('Mid-span deflection at failure is: %.3f m\n', Uaverage);
-fprintf('Stiffness is: %.2f N/m\n', Kstiff);
-fprintf('span/disp at failure is: %.2f \n', 16/Uaverage);
-fprintf('capacity/weight: %.2f \n', total_F/W_bar);
+fprintf('Maximum stress ratio: %.2f \n', max(StressRatio));
+fprintf('Tip deflection: %.2f \n', Uaverage);
 fprintf('-----------------------------\n');
+
 
 % Plot the bar stress
 truss_stress=truss_strain.*(bar.E_vec);
